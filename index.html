@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Visualization Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="grid-section">
+            <div class="grid-controls">
+                <div class="pencil-tool">
+                    <img src="images/pencil.svg" alt="Pencil Tool" class="pencil-icon">
+                </div>
+                <div class="dimension-display horizontal">
+                    <span class="dimension-value">2</span>
+                </div>
+                <div class="dimension-display vertical">
+                    <span class="dimension-value">7</span>
+                </div>
+                <div class="grid-container">
+                    <div class="grid"></div>
+                </div>
+                <div class="grid-resizers">
+                    <div class="arrow-left"><img src="images/arrow-left.svg" alt="Left"></div>
+                    <div class="triangle-marker"></div>
+                    <div class="arrow-right"><img src="images/arrow-right.svg" alt="Right"></div>
+                    <div class="circle-marker"></div>
+                </div>
+                <div class="grid-toggle">
+                    <div class="checkbox">
+                        <img src="images/check.svg" alt="Checkbox">
+                    </div>
+                    <div class="grid-icon">
+                        <img src="images/grid.svg" alt="Grid">
+                    </div>
+                </div>
+            </div>
+            <div class="calculation-box">
+                <div class="calc-icon">+</div>
+                <div class="calc-text">Calculation</div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="control-box factors">
+                <div class="box-header">
+                    <div class="header-icon minus">-</div>
+                    <div class="header-text">Factors</div>
+                </div>
+                <div class="factor-controls">
+                    <div class="factor-input-container">
+                        <div class="factor factor-left">
+                            <div class="up-arrow blue"></div>
+                            <div class="factor-value">7</div>
+                            <div class="down-arrow blue"></div>
+                        </div>
+                        <div class="multiply-sign">×</div>
+                        <div class="factor factor-right">
+                            <div class="up-arrow red"></div>
+                            <div class="factor-value">2</div>
+                            <div class="down-arrow red"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-box product">
+                <div class="box-header">
+                    <div class="header-icon minus">-</div>
+                    <div class="header-text">Product</div>
+                </div>
+                <div class="product-result">
+                    <div class="area-text">Area = </div>
+                    <div class="result-value">14</div>
+                </div>
+            </div>
+
+            <div class="control-box tools">
+                <div class="tools-header">Partial products</div>
+                <div class="tool-buttons">
+                    <button class="tool-button active"><img src="images/hide.svg" alt="Hide"></button>
+                    <button class="tool-button">A</button>
+                    <button class="tool-button">a × b</button>
+                </div>
+                
+                <div class="partition-section">
+                    <div class="partition-header">Partition</div>
+                    <div class="partition-buttons">
+                        <button class="partition-button active"><img src="images/partition-vertical.svg" alt="Vertical Partition"></button>
+                        <button class="partition-button"><img src="images/partition-horizontal.svg" alt="Horizontal Partition"></button>
+                    </div>
+                </div>
+                
+                <div class="grid-size-buttons">
+                    <button class="grid-size-button active">10×10</button>
+                    <button class="grid-size-button">12×12</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

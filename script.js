@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultValue = document.querySelector('.result-value');
     const horizontalDimension = document.querySelector('.dimension-display.horizontal .dimension-value');
     const verticalDimension = document.querySelector('.dimension-display.vertical .dimension-value');
+    const circleMarker = document.querySelector('.circle-marker');
+    const triangleMarker = document.querySelector('.triangle-marker');
 
     // Current state
     let rows = 7;
@@ -28,13 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.appendChild(cell);
         }
         
-        // Update the highlighted area
-        const highlightedArea = document.querySelector('.grid::before');
-        if (highlightedArea) {
-            highlightedArea.style.width = `${(columns / 10) * 100}%`;
-            highlightedArea.style.height = `${(rows / 10) * 100}%`;
-        }
-
         // Update dimensions display
         horizontalDimension.textContent = columns;
         verticalDimension.textContent = rows;
@@ -45,6 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update result
         updateResult();
+        
+        // Update highlighted area
+        updateHighlightedArea();
+    }
+    
+    // Update the highlighted area
+    function updateHighlightedArea() {
+        grid.style.setProperty('--highlight-width', `${(columns / 10) * 100}%`);
+        grid.style.setProperty('--highlight-height', `${(rows / 10) * 100}%`);
     }
     
     // Update the result based on factors
@@ -104,7 +108,11 @@ document.addEventListener('DOMContentLoaded', function() {
         horizontalDimension.textContent = columns;
         verticalDimension.textContent = rows;
         updateResult();
-        initializeGrid();
+        updateHighlightedArea();
+        
+        // Update markers positions
+        updateCircleMarkerPosition();
+        updateTriangleMarkerPosition();
     }
     
     // Grid size buttons
@@ -148,6 +156,91 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
         });
     });
+    
+    // Make markers draggable
+    let isCircleDragging = false;
+    let isTriangleDragging = false;
+    const gridResizers = document.querySelector('.grid-resizers');
+    
+    // Initialize markers positions
+    function updateGridMeasurements() {
+        const gridRect = gridContainer.getBoundingClientRect();
+        return {
+            cellWidth: gridRect.width / 10,
+            cellHeight: gridRect.height / 10,
+            gridLeft: gridRect.left,
+            gridBottom: gridRect.bottom
+        };
+    }
+    
+    function updateCircleMarkerPosition() {
+        const measurements = updateGridMeasurements();
+        const offsetX = columns * measurements.cellWidth;
+        circleMarker.style.position = 'absolute';
+        circleMarker.style.left = `${offsetX}px`;
+    }
+    
+    function updateTriangleMarkerPosition() {
+        // Triangle marker should stay in place as it's part of the layout
+        // This function is added for completeness
+    }
+    
+    // Make triangle marker draggable (horizontal movement)
+    triangleMarker.style.cursor = 'grab';
+    
+    triangleMarker.addEventListener('mousedown', function(e) {
+        isTriangleDragging = true;
+        e.preventDefault();
+    });
+    
+    // Make circle marker draggable (vertical movement)
+    circleMarker.addEventListener('mousedown', function(e) {
+        isCircleDragging = true;
+        e.preventDefault();
+    });
+    
+    // Handle mouse move for both markers
+    document.addEventListener('mousemove', function(e) {
+        const measurements = updateGridMeasurements();
+        
+        // Handle circle marker drag (for horizontal dimension)
+        if (isCircleDragging) {
+            const mouseX = e.clientX - measurements.gridLeft;
+            let newColumns = Math.max(1, Math.min(10, Math.round(mouseX / measurements.cellWidth)));
+            
+            if (newColumns !== columns) {
+                columns = newColumns;
+                updateFactors();
+            }
+        }
+        
+        // Handle triangle marker drag (for vertical dimension)
+        if (isTriangleDragging) {
+            // Calculate vertical position based on mouse position relative to grid bottom
+            const mouseY = measurements.gridBottom - e.clientY;
+            let newRows = Math.max(1, Math.min(10, Math.round(mouseY / measurements.cellHeight)));
+            
+            if (newRows !== rows) {
+                rows = newRows;
+                updateFactors();
+            }
+        }
+    });
+    
+    // Mouse up to end dragging
+    document.addEventListener('mouseup', function() {
+        isCircleDragging = false;
+        isTriangleDragging = false;
+    });
+    
+    // Mouse leave to prevent drag getting stuck
+    document.addEventListener('mouseleave', function() {
+        isCircleDragging = false;
+        isTriangleDragging = false;
+    });
+    
+    // Initialize positions
+    updateCircleMarkerPosition();
     
     // Initialize the grid on load
     initializeGrid();

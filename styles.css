@@ -90,6 +90,9 @@ body {
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
     background-color: white;
+    position: relative;
+    --highlight-width: 20%;
+    --highlight-height: 100%;
 }
 
 .grid::before {
@@ -97,8 +100,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 20%;
-    height: 100%;
+    width: var(--highlight-width);
+    height: var(--highlight-height);
     background-color: rgba(255, 255, 200, 0.7);
     z-index: 1;
 }
@@ -128,6 +131,16 @@ body {
     border-right: 10px solid transparent;
     border-bottom: 20px solid #cc3300;
     margin: 0 5px;
+    cursor: grab;
+    transition: transform 0.1s ease;
+}
+
+.triangle-marker:hover {
+    transform: scale(1.2);
+}
+
+.triangle-marker:active {
+    cursor: grabbing;
 }
 
 .circle-marker {
@@ -136,6 +149,17 @@ body {
     background-color: #999;
     border-radius: 50%;
     margin-left: 10px;
+    cursor: grab;
+    transition: transform 0.1s ease;
+}
+
+.circle-marker:hover {
+    background-color: #666;
+    transform: scale(1.2);
+}
+
+.circle-marker:active {
+    cursor: grabbing;
 }
 
 .grid-toggle {

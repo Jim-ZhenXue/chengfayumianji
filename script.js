@@ -20,15 +20,18 @@ document.addEventListener('DOMContentLoaded', function() {
         grid.innerHTML = '';
         
         // Set grid template
-        grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-        grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        grid.style.gridTemplateColumns = `repeat(10, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(10, 1fr)`;
         
-        // Create grid cells
-        for (let i = 0; i < rows * columns; i++) {
+        // Create grid cells (always 10x10)
+        for (let i = 0; i < 10 * 10; i++) {
             const cell = document.createElement('div');
             cell.classList.add('grid-cell');
             grid.appendChild(cell);
         }
+        
+        // Create horizontal and vertical connecting lines if they don't exist
+        createConnectingLines();
         
         // Update dimensions display
         horizontalDimension.textContent = columns;
@@ -43,12 +46,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update highlighted area
         updateHighlightedArea();
+        
+        // Position the grid-resizers to match the grid container
+        const gridRect = gridContainer.getBoundingClientRect();
+        const gridResizersElement = document.querySelector('.grid-resizers');
+        gridResizersElement.style.left = `${gridRect.left}px`;
+        gridResizersElement.style.top = `${gridRect.top}px`;
     }
     
     // Update the highlighted area
     function updateHighlightedArea() {
-        grid.style.setProperty('--highlight-width', `${(columns / 10) * 100}%`);
-        grid.style.setProperty('--highlight-height', `${(rows / 10) * 100}%`);
+        // Clear any existing highlighted cells
+        document.querySelectorAll('.grid-cell').forEach(cell => {
+            cell.style.backgroundColor = '';
+        });
+        
+        // Highlight the cells based on current rows and columns
+        const cells = document.querySelectorAll('.grid-cell');
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < columns; j++) {
+                const index = i * 10 + j;
+                if (index < cells.length) {
+                    // Use a slightly more yellow color to match the reference image
+                    cells[index].style.backgroundColor = 'rgba(255, 255, 200, 0.8)';
+                }
+            }
+        }
     }
     
     // Update the result based on factors
@@ -115,6 +138,56 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTriangleMarkerPosition();
     }
     
+    // Create horizontal and vertical connecting lines
+    function createConnectingLines() {
+        // Remove existing lines if any
+        const existingHLine = document.getElementById('horizontal-line');
+        const existingVLine = document.getElementById('vertical-line');
+        
+        if (existingHLine) existingHLine.remove();
+        if (existingVLine) existingVLine.remove();
+        
+        // Create horizontal line
+        const horizontalLine = document.createElement('div');
+        horizontalLine.id = 'horizontal-line';
+        horizontalLine.classList.add('connecting-line', 'horizontal');
+        gridContainer.appendChild(horizontalLine);
+        
+        // Create vertical line
+        const verticalLine = document.createElement('div');
+        verticalLine.id = 'vertical-line';
+        verticalLine.classList.add('connecting-line', 'vertical');
+        gridContainer.appendChild(verticalLine);
+        
+        // Update the lines position
+        updateConnectingLines();
+    }
+    
+    // Update the connecting lines
+    function updateConnectingLines() {
+        const horizontalLine = document.getElementById('horizontal-line');
+        const verticalLine = document.getElementById('vertical-line');
+        
+        if (!horizontalLine || !verticalLine) return;
+        
+        const measurements = updateGridMeasurements();
+        const circleX = columns * measurements.cellWidth;
+        const circleY = rows * measurements.cellHeight;
+        
+        // Get the grid position
+        const gridRect = grid.getBoundingClientRect();
+        
+        // Update horizontal line (from left edge to circle)
+        horizontalLine.style.top = `${circleY}px`;
+        horizontalLine.style.left = `0`;
+        horizontalLine.style.width = `${circleX}px`;
+        
+        // Update vertical line (from top edge to circle)
+        verticalLine.style.left = `${circleX}px`;
+        verticalLine.style.top = `0`;
+        verticalLine.style.height = `${circleY}px`;
+    }
+    
     // Grid size buttons
     document.querySelectorAll('.grid-size-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -169,20 +242,38 @@ document.addEventListener('DOMContentLoaded', function() {
             cellWidth: gridRect.width / 10,
             cellHeight: gridRect.height / 10,
             gridLeft: gridRect.left,
-            gridBottom: gridRect.bottom
+            gridTop: gridRect.top,
+            gridHeight: gridRect.height
         };
     }
     
     function updateCircleMarkerPosition() {
         const measurements = updateGridMeasurements();
         const offsetX = columns * measurements.cellWidth;
+        const offsetY = rows * measurements.cellHeight;
+        
+        // Position the circle at the bottom-right corner of the highlighted area
+        // Exactly at the grid intersection point, no offset
         circleMarker.style.position = 'absolute';
         circleMarker.style.left = `${offsetX}px`;
+        circleMarker.style.top = `${offsetY}px`;
+        
+        // Apply a transform to center the circle on the grid intersection
+        circleMarker.style.transform = 'translate(-50%, -50%)';
+        
+        // Update the connecting lines
+        updateConnectingLines();
     }
     
     function updateTriangleMarkerPosition() {
-        // Triangle marker should stay in place as it's part of the layout
-        // This function is added for completeness
+        // Update triangle marker position to match the grid layout
+        const measurements = updateGridMeasurements();
+        triangleMarker.style.position = 'absolute';
+        triangleMarker.style.left = `${columns * measurements.cellWidth / 2}px`;
+        triangleMarker.style.bottom = '-20px';
+        
+        // Reset any transform that might have been applied
+        triangleMarker.style.transform = '';
     }
     
     // Make triangle marker draggable (horizontal movement)
@@ -194,6 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Make circle marker draggable (vertical movement)
+    circleMarker.style.cursor = 'grab';
+    
     circleMarker.addEventListener('mousedown', function(e) {
         isCircleDragging = true;
         e.preventDefault();
@@ -201,10 +294,41 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle mouse move for both markers
     document.addEventListener('mousemove', function(e) {
+        if (!isCircleDragging && !isTriangleDragging) return;
+        
         const measurements = updateGridMeasurements();
         
-        // Handle circle marker drag (for horizontal dimension)
+        // Handle circle marker drag (for both horizontal and vertical dimensions)
         if (isCircleDragging) {
+            // Get mouse position relative to grid
+            const mouseX = e.clientX - measurements.gridLeft;
+            const mouseY = e.clientY - measurements.gridTop;
+            
+            // Calculate new dimensions based on mouse position
+            // Constrain to grid boundaries (1-10)
+            let newColumns = Math.max(1, Math.min(10, Math.round(mouseX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.round(mouseY / measurements.cellHeight)));
+            
+            let changed = false;
+            
+            if (newColumns !== columns) {
+                columns = newColumns;
+                changed = true;
+            }
+            
+            if (newRows !== rows) {
+                rows = newRows;
+                changed = true;
+            }
+            
+            if (changed) {
+                updateFactors();
+            }
+        }
+        
+        // Handle triangle marker drag (for horizontal dimension only)
+        if (isTriangleDragging) {
+            // Calculate horizontal position based on mouse position relative to grid left
             const mouseX = e.clientX - measurements.gridLeft;
             let newColumns = Math.max(1, Math.min(10, Math.round(mouseX / measurements.cellWidth)));
             
@@ -214,17 +338,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Handle triangle marker drag (for vertical dimension)
-        if (isTriangleDragging) {
-            // Calculate vertical position based on mouse position relative to grid bottom
-            const mouseY = measurements.gridBottom - e.clientY;
-            let newRows = Math.max(1, Math.min(10, Math.round(mouseY / measurements.cellHeight)));
-            
-            if (newRows !== rows) {
-                rows = newRows;
-                updateFactors();
-            }
-        }
+        // Prevent default to avoid text selection during drag
+        e.preventDefault();
     });
     
     // Mouse up to end dragging
@@ -241,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize positions
     updateCircleMarkerPosition();
+    updateTriangleMarkerPosition();
     
     // Initialize the grid on load
     initializeGrid();

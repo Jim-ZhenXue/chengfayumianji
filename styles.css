@@ -81,6 +81,8 @@ body {
     border: 1px solid #999;
     width: 500px;
     height: 500px;
+    z-index: 1;
+    background-color: white;
 }
 
 .grid {
@@ -91,48 +93,55 @@ body {
     grid-template-rows: repeat(10, 1fr);
     background-color: white;
     position: relative;
-    --highlight-width: 20%;
-    --highlight-height: 100%;
-}
-
-.grid::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--highlight-width);
-    height: var(--highlight-height);
-    background-color: rgba(255, 255, 200, 0.7);
-    z-index: 1;
 }
 
 .grid-cell {
     border: 1px solid #ddd;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
 }
 
 .grid-resizers {
     position: absolute;
+    top: 70px;
     left: 80px;
-    bottom: -40px;
-    display: flex;
-    align-items: center;
+    width: 500px;
+    height: 500px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.arrow-left, .arrow-right, .triangle-marker, .circle-marker {
+    pointer-events: auto;
 }
 
 .arrow-left, .arrow-right {
     width: 30px;
     height: 30px;
     cursor: pointer;
+    position: absolute;
+    bottom: -40px;
+}
+
+.arrow-left {
+    left: 0;
+}
+
+.arrow-right {
+    left: 60px;
 }
 
 .triangle-marker {
+    position: absolute;
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 20px solid #cc3300;
-    margin: 0 5px;
+    border-bottom: 16px solid #cc3300;
     cursor: grab;
-    transition: transform 0.1s ease;
+    transition: transform 0.2s ease;
+    z-index: 10;
+    transform-origin: 50% 100%;
 }
 
 .triangle-marker:hover {
@@ -146,15 +155,19 @@ body {
 .circle-marker {
     width: 20px;
     height: 20px;
-    background-color: #999;
+    background-color: #8cc;
     border-radius: 50%;
-    margin-left: 10px;
+    margin-left: 0;
     cursor: grab;
-    transition: transform 0.1s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    position: absolute;
+    z-index: 10;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .circle-marker:hover {
-    background-color: #666;
+    background-color: #7bb;
     transform: scale(1.2);
 }
 
@@ -386,4 +399,22 @@ body {
     align-items: center;
     font-size: 16px;
     cursor: pointer;
-} 
+}
+
+/* Connecting lines */
+.connecting-line {
+    position: absolute;
+    background-color: #999;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connecting-line.horizontal {
+    height: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.connecting-line.vertical {
+    width: 2px;
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.2);
+}

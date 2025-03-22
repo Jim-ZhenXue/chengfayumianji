@@ -171,21 +171,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!horizontalLine || !verticalLine) return;
         
         const measurements = updateGridMeasurements();
-        const circleX = columns * measurements.cellWidth;
-        const circleY = rows * measurements.cellHeight;
         
-        // Get the grid position
-        const gridRect = grid.getBoundingClientRect();
+        // Calculate the exact boundaries of the yellow area
+        const yellowAreaWidth = columns * measurements.cellWidth;
+        const yellowAreaHeight = rows * measurements.cellHeight;
         
-        // Update horizontal line (from left edge to circle)
-        horizontalLine.style.top = `${circleY}px`;
+        // Update horizontal line (bottom edge of yellow area)
+        horizontalLine.style.top = `${yellowAreaHeight}px`;
         horizontalLine.style.left = `0`;
-        horizontalLine.style.width = `${circleX}px`;
+        horizontalLine.style.width = `${yellowAreaWidth}px`;
         
-        // Update vertical line (from top edge to circle)
-        verticalLine.style.left = `${circleX}px`;
+        // Update vertical line (right edge of yellow area)
+        verticalLine.style.left = `${yellowAreaWidth}px`;
         verticalLine.style.top = `0`;
-        verticalLine.style.height = `${circleY}px`;
+        verticalLine.style.height = `${yellowAreaHeight}px`;
     }
     
     // Grid size buttons
@@ -253,13 +252,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const offsetY = rows * measurements.cellHeight;
         
         // Position the circle at the bottom-right corner of the highlighted area
-        // Exactly at the grid intersection point, no offset
+        // Exactly at the grid intersection point, with a small offset to place it inside the highlighted area
         circleMarker.style.position = 'absolute';
-        circleMarker.style.left = `${offsetX}px`;
-        circleMarker.style.top = `${offsetY}px`;
+        circleMarker.style.left = `${offsetX - 10}px`;
+        circleMarker.style.top = `${offsetY - 10}px`;
         
-        // Apply a transform to center the circle on the grid intersection
-        circleMarker.style.transform = 'translate(-50%, -50%)';
+        // Remove transform to position it exactly where we want
+        circleMarker.style.transform = '';
         
         // Update the connecting lines
         updateConnectingLines();
@@ -352,6 +351,87 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('mouseleave', function() {
         isCircleDragging = false;
         isTriangleDragging = false;
+    });
+    
+    // Add touch event support for mobile devices
+    triangleMarker.addEventListener('touchstart', function(e) {
+        isTriangleDragging = true;
+        e.preventDefault();
+        
+        // Prevent scrolling while dragging
+        document.body.style.overflow = 'hidden';
+    });
+    
+    circleMarker.addEventListener('touchstart', function(e) {
+        isCircleDragging = true;
+        e.preventDefault();
+        
+        // Prevent scrolling while dragging
+        document.body.style.overflow = 'hidden';
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (!isCircleDragging && !isTriangleDragging) return;
+        
+        const measurements = updateGridMeasurements();
+        const touch = e.touches[0];
+        
+        // Handle circle marker drag
+        if (isCircleDragging) {
+            // Get touch position relative to grid
+            const touchX = touch.clientX - measurements.gridLeft;
+            const touchY = touch.clientY - measurements.gridTop;
+            
+            // Calculate new dimensions based on touch position
+            let newColumns = Math.max(1, Math.min(10, Math.round(touchX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.round(touchY / measurements.cellHeight)));
+            
+            let changed = false;
+            
+            if (newColumns !== columns) {
+                columns = newColumns;
+                changed = true;
+            }
+            
+            if (newRows !== rows) {
+                rows = newRows;
+                changed = true;
+            }
+            
+            if (changed) {
+                updateFactors();
+            }
+        }
+        
+        // Handle triangle marker drag
+        if (isTriangleDragging) {
+            // Calculate horizontal position based on touch position
+            const touchX = touch.clientX - measurements.gridLeft;
+            let newColumns = Math.max(1, Math.min(10, Math.round(touchX / measurements.cellWidth)));
+            
+            if (newColumns !== columns) {
+                columns = newColumns;
+                updateFactors();
+            }
+        }
+        
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchend', function() {
+        isCircleDragging = false;
+        isTriangleDragging = false;
+        
+        // Re-enable scrolling
+        document.body.style.overflow = '';
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        // Update positions
+        updateCircleMarkerPosition();
+        updateTriangleMarkerPosition();
+        updateConnectingLines();
     });
     
     // Initialize positions

@@ -438,54 +438,48 @@ body {
     .grid-container {
         width: calc(100% - 100px);
         height: 400px;
-        max-width: 400px;
     }
     
-    .grid-resizers {
-        width: calc(100% - 100px);
-        height: 400px;
-        max-width: 400px;
-    }
-}
-
-@media (max-width: 576px) {
-    body {
+    /* Keep the same layout as tablets for mobile */
+    .container {
+        flex-direction: column;
         padding: 10px;
     }
     
-    .container {
-        gap: 10px;
+    .grid-section, .controls-section {
+        width: 100%;
     }
     
+    .controls-section {
+        margin-top: 20px;
+    }
+    
+    .controls-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .control-group {
+        width: 48%;
+        margin-bottom: 15px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    /* Still maintain the tablet layout, just adjust sizes */
     .grid-controls {
-        height: 300px;
+        height: 350px;
     }
     
     .grid-container {
         width: calc(100% - 80px);
-        height: 300px;
-        left: 60px;
-        top: 60px;
+        height: 350px;
     }
     
-    .grid-resizers {
-        width: calc(100% - 80px);
-        height: 300px;
-        left: 60px;
-        top: 60px;
-    }
-    
-    .dimension-display {
-        font-size: 24px;
-    }
-    
-    .dimension-display.horizontal {
-        left: 60px;
-        top: 15px;
-    }
-    
-    .dimension-display.vertical {
-        top: 120px;
-        left: 30px;
+    .control-group {
+        width: 100%; /* Stack controls on very small screens */
     }
 }

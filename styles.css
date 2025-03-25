@@ -421,7 +421,6 @@ body {
 
 /* Add responsive styles */
 @media (max-width: 992px) {
-    /* Only apply column layout to tablets, not mobile */
     .container {
         flex-direction: column;
     }
@@ -431,70 +430,41 @@ body {
     }
 }
 
-/* Reset tablet layout for mobile to use desktop layout instead */
 @media (max-width: 768px) {
-    /* Use desktop layout (row layout) for mobile */
-    .container {
-        flex-direction: row;
-        padding: 20px;
-        justify-content: space-between;
-    }
-    
-    .grid-section {
-        width: 60%;
-    }
-    
-    .controls-section {
-        width: 35%;
-        margin-top: 0;
-    }
-    
     .grid-controls {
         height: 400px;
-        position: relative;
     }
     
     .grid-container {
         width: calc(100% - 100px);
         height: 400px;
+        max-width: 400px;
     }
     
-    /* Position factors and product to the right of the canvas */
-    .factors-display {
-        position: absolute;
-        right: -120px;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100px;
-    }
-    
-    .factor-display {
-        font-size: 18px;
-        margin: 5px 0;
-    }
-    
-    .result-display {
-        position: absolute;
-        right: -120px;
-        bottom: 20px;
-        width: 100px;
-        text-align: center;
-    }
-    
-    /* Adjust font sizes for readability on smaller screens */
-    .control-title {
-        font-size: 16px;
+    .grid-resizers {
+        width: calc(100% - 100px);
+        height: 400px;
+        max-width: 400px;
     }
 }
 
-/* Small phones */
-@media (max-width: 480px) {
-    /* Maintain desktop layout but adjust sizes */
-    .container {
+@media (max-width: 576px) {
+    body {
         padding: 10px;
+    }
+    
+    .container {
+        gap: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .grid-section {
+        width: 65%;
+    }
+    
+    .controls-section {
+        width: 30%;
     }
     
     .grid-controls {
@@ -504,25 +474,47 @@ body {
     .grid-container {
         width: calc(100% - 80px);
         height: 300px;
+        left: 60px;
+        top: 60px;
     }
     
-    /* Adjust factors and product position for smaller screens */
-    .factors-display {
-        right: -90px;
-        width: 80px;
+    .grid-resizers {
+        width: calc(100% - 80px);
+        height: 300px;
+        left: 60px;
+        top: 60px;
     }
     
-    .result-display {
-        right: -90px;
-        width: 80px;
+    .dimension-display {
+        font-size: 24px;
     }
     
-    /* Keep controls on the right but make them more compact */
+    .dimension-display.horizontal {
+        left: 60px;
+        top: 15px;
+    }
+    
+    .dimension-display.vertical {
+        top: 120px;
+        left: 30px;
+    }
+    
+    /* Make control elements more compact */
     .control-group {
         margin-bottom: 10px;
     }
     
     .control-title {
         font-size: 14px;
+    }
+    
+    .button-group {
+        flex-wrap: wrap;
+    }
+    
+    .button-group button {
+        padding: 5px;
+        margin: 2px;
+        font-size: 12px;
     }
 }

@@ -451,6 +451,7 @@ body {
     
     .grid-controls {
         height: 400px;
+        position: relative;
     }
     
     .grid-container {
@@ -458,13 +459,34 @@ body {
         height: 400px;
     }
     
-    /* Adjust font sizes for readability on smaller screens */
-    .control-title {
-        font-size: 16px;
+    /* Position factors and product to the right of the canvas */
+    .factors-display {
+        position: absolute;
+        right: -120px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100px;
     }
     
     .factor-display {
         font-size: 18px;
+        margin: 5px 0;
+    }
+    
+    .result-display {
+        position: absolute;
+        right: -120px;
+        bottom: 20px;
+        width: 100px;
+        text-align: center;
+    }
+    
+    /* Adjust font sizes for readability on smaller screens */
+    .control-title {
+        font-size: 16px;
     }
 }
 
@@ -482,6 +504,17 @@ body {
     .grid-container {
         width: calc(100% - 80px);
         height: 300px;
+    }
+    
+    /* Adjust factors and product position for smaller screens */
+    .factors-display {
+        right: -90px;
+        width: 80px;
+    }
+    
+    .result-display {
+        right: -90px;
+        width: 80px;
     }
     
     /* Keep controls on the right but make them more compact */

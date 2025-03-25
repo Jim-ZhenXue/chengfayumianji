@@ -457,64 +457,92 @@ body {
         gap: 10px;
         flex-direction: row;
         justify-content: space-between;
+        align-items: flex-start;
     }
     
     .grid-section {
         width: 65%;
+        margin-right: 5px;
     }
     
     .controls-section {
         width: 30%;
+        display: flex;
+        flex-direction: column;
     }
     
     .grid-controls {
         height: 300px;
+        position: relative;
     }
     
     .grid-container {
         width: calc(100% - 80px);
         height: 300px;
-        left: 60px;
-        top: 60px;
+        left: 40px;
+        top: 40px;
     }
     
     .grid-resizers {
         width: calc(100% - 80px);
         height: 300px;
-        left: 60px;
-        top: 60px;
+        left: 40px;
+        top: 40px;
     }
     
     .dimension-display {
-        font-size: 24px;
+        font-size: 18px;
     }
     
     .dimension-display.horizontal {
-        left: 60px;
-        top: 15px;
+        left: 40px;
+        top: 10px;
     }
     
     .dimension-display.vertical {
-        top: 120px;
-        left: 30px;
+        top: 80px;
+        left: 20px;
     }
     
     /* Make control elements more compact */
     .control-group {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        width: 100%;
     }
     
     .control-title {
         font-size: 14px;
+        margin-bottom: 5px;
     }
     
     .button-group {
         flex-wrap: wrap;
+        justify-content: flex-start;
     }
     
     .button-group button {
-        padding: 5px;
+        padding: 4px 6px;
         margin: 2px;
         font-size: 12px;
+    }
+    
+    .controls-container {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Adjust factors and product display */
+    .factors-display {
+        margin-top: 10px;
+    }
+    
+    .factor-display {
+        font-size: 16px;
+        margin: 5px 0;
+    }
+    
+    .result-display {
+        margin-top: 10px;
+        font-size: 16px;
     }
 }

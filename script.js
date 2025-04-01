@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const triangleMarker = document.querySelector('.triangle-marker');
 
     // Current state
-    let rows = 7;
-    let columns = 2;
+    let rows = 1;
+    let columns = 1;
     
     // Initialize the grid
     function initializeGrid() {

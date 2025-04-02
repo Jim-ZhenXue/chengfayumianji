@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const circleMarker = document.querySelector('.circle-marker');
     const triangleMarker = document.querySelector('.triangle-marker');
     const eraserTool = document.querySelector('.eraser-tool');
+    const gridIcon = document.querySelector('.grid-icon');
 
     // Current state
     let rows = 1;
     let columns = 1;
+    let gridVisible = true;
     
     // Initialize the grid
     function initializeGrid() {
@@ -441,6 +443,21 @@ document.addEventListener('DOMContentLoaded', function() {
         rows = 1;
         columns = 1;
         updateFactors();
+    });
+    
+    // Add grid toggle functionality
+    gridIcon.addEventListener('click', function() {
+        gridVisible = !gridVisible;
+        
+        // Toggle grid cell borders
+        const gridCells = document.querySelectorAll('.grid-cell');
+        gridCells.forEach(cell => {
+            if (gridVisible) {
+                cell.style.border = '1px solid #ddd';
+            } else {
+                cell.style.border = 'none';
+            }
+        });
     });
     
     // Initialize positions

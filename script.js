@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const verticalDimension = document.querySelector('.dimension-display.vertical .dimension-value');
     const circleMarker = document.querySelector('.circle-marker');
     const triangleMarker = document.querySelector('.triangle-marker');
+    const eraserTool = document.querySelector('.eraser-tool');
 
     // Current state
     let rows = 1;
@@ -432,6 +433,14 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCircleMarkerPosition();
         updateTriangleMarkerPosition();
         updateConnectingLines();
+    });
+    
+    // Add eraser functionality to reset to initial state
+    eraserTool.addEventListener('click', function() {
+        // Reset to initial state (1x1)
+        rows = 1;
+        columns = 1;
+        updateFactors();
     });
     
     // Initialize positions

@@ -359,33 +359,6 @@ body {
     color: #ffee99;
 }
 
-/* Grid size buttons */
-.grid-size-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px;
-}
-
-.grid-size-button {
-    width: 80px;
-    height: 40px;
-    border: 1px solid #777;
-    border-radius: 5px;
-    background-color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    cursor: pointer;
-    color: #f0f0f0;
-}
-
-.grid-size-button.active {
-    border: 2px solid #66ccff;
-    background-color: #444;
-}
-
 /* Connecting lines */
 .connecting-line {
     position: absolute;

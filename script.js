@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const horizontalDimension = document.querySelector('.dimension-display.horizontal .dimension-value');
     const verticalDimension = document.querySelector('.dimension-display.vertical .dimension-value');
     const circleMarker = document.querySelector('.circle-marker');
-    const triangleMarker = document.querySelector('.triangle-marker');
     const eraserTool = document.querySelector('.eraser-tool');
     const gridIcon = document.querySelector('.grid-icon');
 
@@ -112,21 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Handle resizing through arrow buttons
-    document.querySelector('.arrow-left').addEventListener('click', function() {
-        if (columns > 1) {
-            columns--;
-            updateFactors();
-        }
-    });
-    
-    document.querySelector('.arrow-right').addEventListener('click', function() {
-        if (columns < 10) {
-            columns++;
-            updateFactors();
-        }
-    });
-    
     // Update all UI elements when factors change
     function updateFactors() {
         factorLeft.textContent = rows;
@@ -136,9 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateResult();
         updateHighlightedArea();
         
-        // Update markers positions
+        // Update marker position
         updateCircleMarkerPosition();
-        updateTriangleMarkerPosition();
     }
     
     // Create horizontal and vertical connecting lines
@@ -232,9 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Make markers draggable
+    // Make marker draggable
     let isCircleDragging = false;
-    let isTriangleDragging = false;
     const gridResizers = document.querySelector('.grid-resizers');
     
     // Initialize markers positions
@@ -267,25 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateConnectingLines();
     }
     
-    function updateTriangleMarkerPosition() {
-        // Update triangle marker position to match the grid layout
-        const measurements = updateGridMeasurements();
-        triangleMarker.style.position = 'absolute';
-        triangleMarker.style.left = `${columns * measurements.cellWidth / 2}px`;
-        triangleMarker.style.bottom = '-20px';
-        
-        // Reset any transform that might have been applied
-        triangleMarker.style.transform = '';
-    }
-    
-    // Make triangle marker draggable (horizontal movement)
-    triangleMarker.style.cursor = 'grab';
-    
-    triangleMarker.addEventListener('mousedown', function(e) {
-        isTriangleDragging = true;
-        e.preventDefault();
-    });
-    
     // Make circle marker draggable (vertical movement)
     circleMarker.style.cursor = 'grab';
     
@@ -294,9 +257,9 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
     });
     
-    // Handle mouse move for both markers
+    // Handle mouse move for circle marker
     document.addEventListener('mousemove', function(e) {
-        if (!isCircleDragging && !isTriangleDragging) return;
+        if (!isCircleDragging) return;
         
         const measurements = updateGridMeasurements();
         
@@ -328,18 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Handle triangle marker drag (for horizontal dimension only)
-        if (isTriangleDragging) {
-            // Calculate horizontal position based on mouse position relative to grid left
-            const mouseX = e.clientX - measurements.gridLeft;
-            let newColumns = Math.max(1, Math.min(10, Math.round(mouseX / measurements.cellWidth)));
-            
-            if (newColumns !== columns) {
-                columns = newColumns;
-                updateFactors();
-            }
-        }
-        
         // Prevent default to avoid text selection during drag
         e.preventDefault();
     });
@@ -347,24 +298,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mouse up to end dragging
     document.addEventListener('mouseup', function() {
         isCircleDragging = false;
-        isTriangleDragging = false;
     });
     
     // Mouse leave to prevent drag getting stuck
     document.addEventListener('mouseleave', function() {
         isCircleDragging = false;
-        isTriangleDragging = false;
     });
     
     // Add touch event support for mobile devices
-    triangleMarker.addEventListener('touchstart', function(e) {
-        isTriangleDragging = true;
-        e.preventDefault();
-        
-        // Prevent scrolling while dragging
-        document.body.style.overflow = 'hidden';
-    });
-    
     circleMarker.addEventListener('touchstart', function(e) {
         isCircleDragging = true;
         e.preventDefault();
@@ -374,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.addEventListener('touchmove', function(e) {
-        if (!isCircleDragging && !isTriangleDragging) return;
+        if (!isCircleDragging) return;
         
         const measurements = updateGridMeasurements();
         const touch = e.touches[0];
@@ -406,24 +347,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Handle triangle marker drag
-        if (isTriangleDragging) {
-            // Calculate horizontal position based on touch position
-            const touchX = touch.clientX - measurements.gridLeft;
-            let newColumns = Math.max(1, Math.min(10, Math.round(touchX / measurements.cellWidth)));
-            
-            if (newColumns !== columns) {
-                columns = newColumns;
-                updateFactors();
-            }
-        }
-        
         e.preventDefault();
     });
     
     document.addEventListener('touchend', function() {
         isCircleDragging = false;
-        isTriangleDragging = false;
         
         // Re-enable scrolling
         document.body.style.overflow = '';
@@ -433,7 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         // Update positions
         updateCircleMarkerPosition();
-        updateTriangleMarkerPosition();
         updateConnectingLines();
     });
     
@@ -462,7 +389,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize positions
     updateCircleMarkerPosition();
-    updateTriangleMarkerPosition();
     
     // Initialize the grid on load
     initializeGrid();

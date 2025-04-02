@@ -196,36 +196,6 @@ body {
     filter: invert(1);
 }
 
-.calculation-box {
-    border: 1px solid #777;
-    border-radius: 5px;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    margin-top: auto;
-    background-color: #222;
-}
-
-.calc-icon {
-    background-color: #33cc33;
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.calc-text {
-    font-size: 18px;
-    color: #f0f0f0;
-}
-
 /* Controls Section */
 .controls-section {
     width: 350px;

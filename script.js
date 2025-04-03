@@ -243,12 +243,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const offsetY = rows * measurements.cellHeight;
         
         // Position the circle at the bottom-right corner of the highlighted area
-        // Exactly at the grid intersection point, with a small offset to place it inside the highlighted area
+        // Exactly at the grid intersection point
         circleMarker.style.position = 'absolute';
-        circleMarker.style.left = `${offsetX - 10}px`;
-        circleMarker.style.top = `${offsetY - 10}px`;
+        circleMarker.style.left = `${offsetX}px`;
+        circleMarker.style.top = `${offsetY}px`;
         
-        // Remove transform to position it exactly where we want
+        // Remove transform from inline style as we're using CSS transform
         circleMarker.style.transform = '';
         
         // Update the connecting lines

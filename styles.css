@@ -18,6 +18,7 @@ body {
     max-width: 1200px;
     width: 100%;
     gap: 20px;
+    align-items: center;
 }
 
 /* Grid Section */
@@ -175,6 +176,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    align-self: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .control-box {

@@ -265,8 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function updateCircleMarkerPosition() {
         const measurements = updateGridMeasurements();
-        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.9;
-        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.9;
+        // Position the marker center at 75% of the last cell's width/height to keep it inside
+        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.75;
+        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.75;
         
         // Position the circle inside the bottom-right cell of the highlighted area
         circleMarker.style.position = 'absolute';

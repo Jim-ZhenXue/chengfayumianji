@@ -264,17 +264,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateCircleMarkerPosition() {
-        const measurements = updateGridMeasurements();
-        // Position the marker center at 75% of the last cell's width/height to keep it inside
-        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.75;
-        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.75;
+        // Find the grid cell containing the maximum number
+        const gridCells = document.querySelectorAll('.grid-cell');
+        let maxCell = null;
+        let maxVal = -Infinity;
+        gridCells.forEach(cell => {
+            const text = cell.innerText.trim();
+            const val = parseFloat(text);
+            if (!isNaN(val) && val > maxVal) {
+                maxVal = val;
+                maxCell = cell;
+            }
+        });
+        if (!maxCell) return;
         
-        // Position the circle inside the bottom-right cell of the highlighted area
+        // Compute the center of the maxCell relative to the grid container
+        const containerRect = gridContainer.getBoundingClientRect();
+        const cellRect = maxCell.getBoundingClientRect();
+        const offsetX = cellRect.left - containerRect.left + cellRect.width / 2;
+        const offsetY = cellRect.top - containerRect.top + cellRect.height / 2;
+        
         circleMarker.style.position = 'absolute';
         circleMarker.style.left = `${offsetX}px`;
         circleMarker.style.top = `${offsetY}px`;
         
-        // Update the marker connector
+        // Update the marker connector to link with the center of the max cell
         updateMarkerConnector(offsetX, offsetY);
     }
     

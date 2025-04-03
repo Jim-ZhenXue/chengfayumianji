@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = 0; i < 10 * 10; i++) {
             const cell = document.createElement('div');
             cell.classList.add('grid-cell');
+            
             grid.appendChild(cell);
         }
         
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear any existing highlighted cells
         document.querySelectorAll('.grid-cell').forEach(cell => {
             cell.style.backgroundColor = '';
+            cell.textContent = ''; // Clear all numbers
         });
         
         // Highlight the cells based on current rows and columns
@@ -71,6 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (index < cells.length) {
                     // Use a slightly more yellow color to match the reference image
                     cells[index].style.backgroundColor = 'rgba(255, 255, 200, 0.8)';
+                    
+                    // Add the cell number (1-based)
+                    const cellNumber = i * columns + j + 1;
+                    cells[index].textContent = cellNumber;
                 }
             }
         }

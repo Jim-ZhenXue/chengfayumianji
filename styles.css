@@ -135,12 +135,11 @@ body {
     border-radius: 50%;
     margin-left: 0;
     cursor: grab;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    transition: background-color 0.2s ease;
     position: absolute;
     z-index: 10;
     border: 2px solid #fff;
     box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
-    transform: translate(50%, 50%);
 }
 
 .circle-marker:hover {
@@ -172,6 +171,16 @@ body {
 
 .grid-icon img, .checkbox img {
     filter: invert(1);
+}
+
+.marker-connector {
+    position: absolute;
+    background-color: #8cc;
+    pointer-events: none;
+    z-index: 5;
+    width: 2px;
+    height: 2px;
+    transform-origin: 0 0;
 }
 
 /* Controls Section */

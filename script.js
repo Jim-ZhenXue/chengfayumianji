@@ -239,20 +239,47 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function updateCircleMarkerPosition() {
         const measurements = updateGridMeasurements();
-        const offsetX = columns * measurements.cellWidth;
-        const offsetY = rows * measurements.cellHeight;
+        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.9;
+        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.9;
         
-        // Position the circle at the bottom-right corner of the highlighted area
-        // Exactly at the grid intersection point
+        // Position the circle inside the bottom-right cell of the highlighted area
+        // Close to the bottom-right corner of the yellow area
         circleMarker.style.position = 'absolute';
         circleMarker.style.left = `${offsetX}px`;
         circleMarker.style.top = `${offsetY}px`;
         
-        // Remove transform from inline style as we're using CSS transform
+        // No transform needed
         circleMarker.style.transform = '';
         
         // Update the connecting lines
         updateConnectingLines();
+        
+        // Update the marker connector
+        updateMarkerConnector(offsetX, offsetY);
+    }
+    
+    // Function to update the marker connector position and size
+    function updateMarkerConnector(markerX, markerY) {
+        const connector = document.querySelector('.marker-connector');
+        if (!connector) return;
+        
+        const measurements = updateGridMeasurements();
+        const cornerX = columns * measurements.cellWidth;
+        const cornerY = rows * measurements.cellHeight;
+        
+        // Position at the bottom-right corner of the yellow area
+        connector.style.left = `${cornerX}px`;
+        connector.style.top = `${cornerY}px`;
+        
+        // Calculate the distance and angle between the corner and the marker
+        const deltaX = markerX - cornerX;
+        const deltaY = markerY - cornerY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        
+        // Set the width to the distance and rotate to the correct angle
+        connector.style.width = `${distance}px`;
+        connector.style.transform = `rotate(${angle}deg)`;
     }
     
     // Make circle marker draggable (vertical movement)

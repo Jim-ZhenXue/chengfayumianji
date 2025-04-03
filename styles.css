@@ -11,6 +11,9 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
+    min-height: 100vh; /* 确保body至少有视口高度 */
+    align-items: center; /* 垂直居中 */
+    margin: 0; /* 移除默认边距 */
 }
 
 .container {

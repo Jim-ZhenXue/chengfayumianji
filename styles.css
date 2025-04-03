@@ -178,9 +178,12 @@ body {
     background-color: #8cc;
     pointer-events: none;
     z-index: 5;
-    width: 2px;
-    height: 2px;
+    width: 1px;
+    height: 1px;
     transform-origin: 0 0;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+    display: block;
+    opacity: 1;
 }
 
 /* Controls Section */

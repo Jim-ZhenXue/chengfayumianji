@@ -237,28 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    function updateCircleMarkerPosition() {
-        const measurements = updateGridMeasurements();
-        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.9;
-        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.9;
-        
-        // Position the circle inside the bottom-right cell of the highlighted area
-        // Close to the bottom-right corner of the yellow area
-        circleMarker.style.position = 'absolute';
-        circleMarker.style.left = `${offsetX}px`;
-        circleMarker.style.top = `${offsetY}px`;
-        
-        // No transform needed
-        circleMarker.style.transform = '';
-        
-        // Update the connecting lines
-        updateConnectingLines();
-        
-        // Update the marker connector
-        updateMarkerConnector(offsetX, offsetY);
-    }
-    
-    // Function to update the marker connector position and size
     function updateMarkerConnector(markerX, markerY) {
         const connector = document.querySelector('.marker-connector');
         if (!connector) return;
@@ -279,7 +257,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Set the width to the distance and rotate to the correct angle
         connector.style.width = `${distance}px`;
+        connector.style.height = '1px';
         connector.style.transform = `rotate(${angle}deg)`;
+        connector.style.display = 'block';
+        connector.style.opacity = '1';
+    }
+    
+    function updateCircleMarkerPosition() {
+        const measurements = updateGridMeasurements();
+        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.9;
+        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.9;
+        
+        // Position the circle inside the bottom-right cell of the highlighted area
+        circleMarker.style.position = 'absolute';
+        circleMarker.style.left = `${offsetX}px`;
+        circleMarker.style.top = `${offsetY}px`;
+        
+        // Update the marker connector
+        updateMarkerConnector(offsetX, offsetY);
     }
     
     // Make circle marker draggable (vertical movement)

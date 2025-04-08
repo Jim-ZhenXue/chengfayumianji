@@ -13,7 +13,7 @@ body {
     padding: 20px;
     min-height: 100vh; /* 确保body至少有视口高度 */
     align-items: center; /* 垂直居中 */
-    margin: 0; /* 移除默认边距 */
+    margin: 0; /* 移除默认边距 */ 
     overflow: hidden; /* 禁止页面滚动 */
     position: fixed; /* 固定位置 */
     width: 100%; /* 确保宽度占满 */

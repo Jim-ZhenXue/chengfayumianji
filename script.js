@@ -1,22 +1,3 @@
-// Function to handle home button functionality
-function goHome() {
-    // Check if in WeChat mini program environment
-    if (typeof wx !== 'undefined' && wx.miniProgram) {
-        // If in WeChat mini program, use its navigation API
-        wx.miniProgram.navigateBack();
-    } else {
-        // For regular web browsers - you can customize this destination
-        // Option 1: Go back to the previous page
-        window.history.back();
-        
-        // Option 2: Go to a specific home page
-        // window.location.href = '/index.html'; // or any other URL
-        
-        // Option 3: Reload the current page
-        // window.location.reload();
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     // Grid initialization
     const grid = document.querySelector('.grid');

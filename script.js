@@ -318,14 +318,18 @@ document.addEventListener('DOMContentLoaded', function() {
         updateMarkerConnector(adjustedOffsetX, adjustedOffsetY);
     }
     
-    // Make circle marker draggable (vertical movement)
+    // 蓝色圆点和连接线功能已禁用
+    /*
     circleMarker.style.cursor = 'grab';
     
     circleMarker.addEventListener('mousedown', function(e) {
         isCircleDragging = true;
         e.preventDefault();
     });
+    */
     
+    // 蓝色圆点和连接线的事件处理程序已禁用
+    /*
     // Handle mouse move for circle marker
     document.addEventListener('mousemove', function(e) {
         if (!isCircleDragging) return;
@@ -450,11 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Re-enable scrolling
         document.body.style.overflow = '';
     });
+    */
     
     // Handle window resize
     window.addEventListener('resize', function() {
-        // Update positions
-        updateCircleMarkerPosition();
+        // 更新位置（已移除圆点和连接线的更新）
+        // updateCircleMarkerPosition();
         updateConnectingLines();
     });
     
@@ -481,8 +486,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize positions
-    updateCircleMarkerPosition();
+    // 初始化网格
+    // updateCircleMarkerPosition(); // 已移除蓝色圆点的初始化
     
     // Initialize the grid on load
     initializeGrid();

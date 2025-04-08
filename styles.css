@@ -127,8 +127,10 @@ body {
     z-index: 2;
 }
 
+/* 蓝色圆点已移除 */
 .circle-marker {
-    pointer-events: auto;
+    display: none;
+    pointer-events: none;
     width: 20px;
     height: 20px;
     background-color: #8cc;
@@ -173,7 +175,9 @@ body {
     filter: invert(1);
 }
 
+/* 连接线已移除 */
 .marker-connector {
+    display: none;
     position: absolute;
     background-color: #8cc;
     pointer-events: none;
@@ -182,8 +186,7 @@ body {
     height: 1px;
     transform-origin: 0 0;
     box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-    display: block;
-    opacity: 1;
+    opacity: 0;
 }
 
 /* Controls Section */

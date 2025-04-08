@@ -351,21 +351,81 @@ body {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) and (min-width: 768px) {
+    /* iPad specific styles */
+    body {
+        padding: 0; /* Remove extra padding */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        width: 100%;
+        height: 100%;
+    }
+    
+    .container {
+        flex-direction: row; /* Keep grid on left, controls on right as per user preference */
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+        gap: 10px;
+        box-sizing: border-box;
+    }
+    
+    .grid-section {
+        width: 60%;
+    }
+    
+    .controls-section {
+        width: 35%;
+    }
+    
     .grid-controls {
-        height: 400px;
+        height: 350px;
+        transform: scale(0.85);
+        transform-origin: top left;
+    }
+    
+    .grid-container {
+        width: calc(100% - 60px);
+        height: 350px;
+        max-width: 350px;
+        left: 50px;
+        top: 50px;
+    }
+    
+    .grid-resizers {
+        width: calc(100% - 60px);
+        height: 350px;
+        max-width: 350px;
+        left: 50px;
+        top: 50px;
+    }
+    
+    .factor {
+        width: 60px; /* Slightly smaller control elements */
+        height: 80px;
+    }
+    
+    .factor-value {
+        font-size: 36px;
+        line-height: 80px;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 577px) {
+    .grid-controls {
+        height: 380px;
     }
     
     .grid-container {
         width: calc(100% - 100px);
-        height: 400px;
-        max-width: 400px;
+        height: 380px;
+        max-width: 380px;
     }
     
     .grid-resizers {
         width: calc(100% - 100px);
-        height: 400px;
-        max-width: 400px;
+        height: 380px;
+        max-width: 380px;
     }
 }
 

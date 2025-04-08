@@ -264,31 +264,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateCircleMarkerPosition() {
-        // Find the grid cell containing the maximum number
-        const gridCells = document.querySelectorAll('.grid-cell');
-        let maxCell = null;
-        let maxVal = -Infinity;
-        gridCells.forEach(cell => {
-            const text = cell.innerText.trim();
-            const val = parseFloat(text);
-            if (!isNaN(val) && val > maxVal) {
-                maxVal = val;
-                maxCell = cell;
-            }
-        });
-        if (!maxCell) return;
+        const measurements = updateGridMeasurements();
         
-        // Compute the center of the maxCell relative to the grid container
-        const containerRect = gridContainer.getBoundingClientRect();
-        const cellRect = maxCell.getBoundingClientRect();
-        const offsetX = cellRect.left - containerRect.left + cellRect.width / 2;
-        const offsetY = cellRect.top - containerRect.top + cellRect.height / 2;
+        // 确保columns和rows在有效范围内
+        columns = Math.max(1, Math.min(10, columns));
+        rows = Math.max(1, Math.min(10, rows));
         
+        // 计算圆点位置，确保在黄色区域的右下角方格内
+        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.5;
+        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.5;
+        
+        // 设置圆点的位置
         circleMarker.style.position = 'absolute';
         circleMarker.style.left = `${offsetX}px`;
         circleMarker.style.top = `${offsetY}px`;
         
-        // Update the marker connector to link with the center of the max cell
+        // 更新连接线
         updateMarkerConnector(offsetX, offsetY);
     }
     

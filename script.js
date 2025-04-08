@@ -286,13 +286,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const offsetX = Math.min(cellRight - markerRadius * 1.5, Math.max(cellLeft + markerRadius, cellRight - markerRadius * 1.5));
         const offsetY = Math.min(cellBottom - markerRadius * 1.5, Math.max(cellTop + markerRadius, cellBottom - markerRadius * 1.5));
         
+        // 获取页面尺寸和方格位置信息以确保距离页面边缘的要求
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const gridContainerRect = gridContainer.getBoundingClientRect();
+        
+        // 计算圆点相对于页面的绝对位置
+        const absoluteLeft = gridContainerRect.left + offsetX;
+        const absoluteBottom = viewportHeight - (gridContainerRect.top + offsetY + markerRadius * 2);
+        
+        // 检查是否满足距离页面左边缘和下边缘至少80px的要求
+        let adjustedOffsetX = offsetX;
+        let adjustedOffsetY = offsetY;
+        
+        // 如果不满足左边距要求，调整X坐标
+        if (absoluteLeft < 80) {
+            adjustedOffsetX = offsetX + (80 - absoluteLeft);
+        }
+        
+        // 如果不满足下边距要求，调整Y坐标
+        if (absoluteBottom < 80) {
+            adjustedOffsetY = offsetY - (80 - absoluteBottom);
+        }
+        
         // 设置圆点的位置
         circleMarker.style.position = 'absolute';
-        circleMarker.style.left = `${offsetX}px`;
-        circleMarker.style.top = `${offsetY}px`;
+        circleMarker.style.left = `${adjustedOffsetX}px`;
+        circleMarker.style.top = `${adjustedOffsetY}px`;
         
         // 更新连接线 - 连接到单元格右下角
-        updateMarkerConnector(offsetX, offsetY);
+        updateMarkerConnector(adjustedOffsetX, adjustedOffsetY);
     }
     
     // Make circle marker draggable (vertical movement)

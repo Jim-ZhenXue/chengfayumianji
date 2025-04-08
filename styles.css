@@ -573,4 +573,27 @@ body {
     border: 2px solid #fff;
     box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
     z-index: 10;
+    cursor: grab;
+    pointer-events: auto;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.red-dot:hover {
+    background-color: #ff5555;
+    transform: scale(1.1);
+}
+
+.red-dot:active {
+    cursor: grabbing;
+    background-color: #ff0000;
+}
+
+.red-dot-container {
+    position: absolute;
+    top: 70px;
+    left: 80px;
+    width: 500px;
+    height: 500px;
+    z-index: 3;
+    pointer-events: none;
 }

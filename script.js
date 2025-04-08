@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const horizontalDimension = document.querySelector('.dimension-display.horizontal .dimension-value');
     const verticalDimension = document.querySelector('.dimension-display.vertical .dimension-value');
     const circleMarker = document.querySelector('.circle-marker');
+    const redDot = document.querySelector('.red-dot');
     const eraserTool = document.querySelector('.eraser-tool');
     const gridIcon = document.querySelector('.grid-icon');
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let rows = 1;
     let columns = 1;
     let gridVisible = true;
+    let isRedDotDragging = false;
     
     // Initialize the grid
     function initializeGrid() {
@@ -456,6 +458,142 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     */
     
+    // 添加红色圆点的拖动功能
+    redDot.addEventListener('mousedown', function(e) {
+        isRedDotDragging = true;
+        e.preventDefault();
+    });
+    
+    // 处理鼠标移动事件 - 拖动红色圆点
+    document.addEventListener('mousemove', function(e) {
+        if (!isRedDotDragging) return;
+        
+        const measurements = updateGridMeasurements();
+        
+        // 获取鼠标相对于网格的位置
+        const mouseX = e.clientX - measurements.gridLeft;
+        const mouseY = e.clientY - measurements.gridTop;
+        
+        // 确保在网格边界内
+        const totalGridWidth = measurements.cellWidth * 10;
+        const totalGridHeight = measurements.cellHeight * 10;
+        
+        // 安全边距，确保圆点始终在网格内
+        const safetyMargin = 5;
+        
+        // 限制坐标在网格内
+        const clampedX = Math.max(safetyMargin, Math.min(totalGridWidth - safetyMargin, mouseX));
+        const clampedY = Math.max(safetyMargin, Math.min(totalGridHeight - safetyMargin, mouseY));
+        
+        // 基于鼠标位置计算新的行数和列数
+        let newColumns = Math.max(1, Math.min(10, Math.ceil(clampedX / measurements.cellWidth)));
+        let newRows = Math.max(1, Math.min(10, Math.ceil(clampedY / measurements.cellHeight)));
+        
+        let changed = false;
+        
+        if (newColumns !== columns) {
+            columns = newColumns;
+            changed = true;
+        }
+        
+        if (newRows !== rows) {
+            rows = newRows;
+            changed = true;
+        }
+        
+        if (changed) {
+            // 更新所有相关元素
+            updateFactors();
+            // 重新定位红色圆点
+            positionRedDot();
+        }
+        
+        // 防止拖动时文本选择
+        e.preventDefault();
+    });
+    
+    // 鼠标松开结束拖动
+    document.addEventListener('mouseup', function() {
+        isRedDotDragging = false;
+    });
+    
+    // 鼠标离开窗口时结束拖动
+    document.addEventListener('mouseleave', function() {
+        isRedDotDragging = false;
+    });
+    
+    // 添加触摸事件支持移动设备
+    redDot.addEventListener('touchstart', function(e) {
+        isRedDotDragging = true;
+        e.preventDefault();
+        
+        // 防止拖动时页面滚动
+        document.body.style.overflow = 'hidden';
+    });
+    
+    // 处理触摸移动事件
+    document.addEventListener('touchmove', function(e) {
+        if (!isRedDotDragging) return;
+        
+        const measurements = updateGridMeasurements();
+        const touch = e.touches[0];
+        
+        // 获取触摸相对于网格的位置
+        const touchX = touch.clientX - measurements.gridLeft;
+        const touchY = touch.clientY - measurements.gridTop;
+        
+        // 确保在网格边界内
+        const totalGridWidth = measurements.cellWidth * 10;
+        const totalGridHeight = measurements.cellHeight * 10;
+        
+        // 安全边距
+        const safetyMargin = 5;
+        
+        // 限制坐标在网格内
+        const clampedX = Math.max(safetyMargin, Math.min(totalGridWidth - safetyMargin, touchX));
+        const clampedY = Math.max(safetyMargin, Math.min(totalGridHeight - safetyMargin, touchY));
+        
+        // 基于触摸位置计算新的行数和列数
+        let newColumns = Math.max(1, Math.min(10, Math.ceil(clampedX / measurements.cellWidth)));
+        let newRows = Math.max(1, Math.min(10, Math.ceil(clampedY / measurements.cellHeight)));
+        
+        let changed = false;
+        
+        if (newColumns !== columns) {
+            columns = newColumns;
+            changed = true;
+        }
+        
+        if (newRows !== rows) {
+            rows = newRows;
+            changed = true;
+        }
+        
+        if (changed) {
+            // 更新所有相关元素
+            updateFactors();
+            // 重新定位红色圆点
+            positionRedDot();
+        }
+        
+        e.preventDefault();
+    });
+    
+    // 触摸结束处理
+    document.addEventListener('touchend', function() {
+        isRedDotDragging = false;
+        
+        // 恢复滚动
+        document.body.style.overflow = '';
+    });
+    
+    document.addEventListener('touchcancel', function() {
+        isRedDotDragging = false;
+        
+        // 恢复滚动
+        document.body.style.overflow = '';
+    });
+    
     // Handle window resize
     window.addEventListener('resize', function() {
         // 更新位置（已移除圆点和连接线的更新）
@@ -489,12 +627,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 定位红色圆点到左上角方格右下角的函数
+    // 定位红色圆点到当前黄色区域的右下角的函数
     function positionRedDot() {
         const redDot = document.querySelector('.red-dot');
         const measurements = updateGridMeasurements();
         
-        // 计算第一个方格的宽高
+        // 计算单元格的宽高
         const cellWidth = measurements.cellWidth;
         const cellHeight = measurements.cellHeight;
         
@@ -503,13 +641,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const dotWidth = parseFloat(dotStyle.width) || 15;
         const dotHeight = parseFloat(dotStyle.height) || 15;
         
-        // 将红色圆点定位在左上角方格的右下角（第一个方格）
-        // 设置偏移量以确保它始终位于方格内部
+        // 计算当前黄色区域的右下角坐标
+        const areaRightX = columns * cellWidth;
+        const areaBottomY = rows * cellHeight;
+        
+        // 设置偏移量以确保圆点始终位于方格内部
         const dotOffset = dotWidth * 0.75; // 偏移量的计算采用圆点直径的75%
         
-        // 精确定位到左上角方格的右下角
-        redDot.style.left = `${cellWidth - dotOffset}px`;
-        redDot.style.top = `${cellHeight - dotOffset}px`;
+        // 精确定位到当前黄色区域的右下角
+        redDot.style.left = `${areaRightX - dotOffset}px`;
+        redDot.style.top = `${areaBottomY - dotOffset}px`;
         
         // 确保圆点始终保持可见
         redDot.style.display = 'block';

@@ -486,9 +486,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // 定位红色圆点到左上角方格右下角的函数
+    function positionRedDot() {
+        const redDot = document.querySelector('.red-dot');
+        const measurements = updateGridMeasurements();
+        
+        // 计算第一个方格的宽高
+        const cellWidth = measurements.cellWidth;
+        const cellHeight = measurements.cellHeight;
+        
+        // 将红色圆点定位在左上角方格的右下角（第一个方格）
+        // 减去红色圆点的一半宽高，确保它位于方格内部
+        redDot.style.left = `${cellWidth - 12}px`;
+        redDot.style.top = `${cellHeight - 12}px`;
+    }
+    
     // 初始化网格
     // updateCircleMarkerPosition(); // 已移除蓝色圆点的初始化
     
     // Initialize the grid on load
     initializeGrid();
+    
+    // 定位红色圆点到左上角方格右下角
+    positionRedDot();
 }); 

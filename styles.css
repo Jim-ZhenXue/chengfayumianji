@@ -515,3 +515,27 @@ body {
     color: white;
     font-size: 12px;
 }
+
+/* 红色圆点样式 */
+.red-dot-container {
+    position: absolute;
+    top: 70px;
+    left: 80px;
+    width: 500px;
+    height: 500px;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.red-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    background-color: #ff3333;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+}

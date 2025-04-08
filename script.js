@@ -303,10 +303,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const mouseX = e.clientX - measurements.gridLeft;
             const mouseY = e.clientY - measurements.gridTop;
             
-            // Calculate new dimensions based on mouse position
-            // Constrain to grid boundaries (1-10)
-            let newColumns = Math.max(1, Math.min(10, Math.round(mouseX / measurements.cellWidth)));
-            let newRows = Math.max(1, Math.min(10, Math.round(mouseY / measurements.cellHeight)));
+            // Ensure we stay within the grid boundaries
+            const totalGridWidth = measurements.cellWidth * 10;
+            const totalGridHeight = measurements.cellHeight * 10;
+            
+            // Constrain mouse position to grid boundaries
+            const clampedX = Math.max(0, Math.min(totalGridWidth, mouseX));
+            const clampedY = Math.max(0, Math.min(totalGridHeight, mouseY));
+            
+            // Calculate new dimensions based on constrained mouse position
+            let newColumns = Math.max(1, Math.min(10, Math.round(clampedX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.round(clampedY / measurements.cellHeight)));
             
             let changed = false;
             
@@ -360,9 +367,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const touchX = touch.clientX - measurements.gridLeft;
             const touchY = touch.clientY - measurements.gridTop;
             
-            // Calculate new dimensions based on touch position
-            let newColumns = Math.max(1, Math.min(10, Math.round(touchX / measurements.cellWidth)));
-            let newRows = Math.max(1, Math.min(10, Math.round(touchY / measurements.cellHeight)));
+            // Ensure we stay within the grid boundaries
+            const totalGridWidth = measurements.cellWidth * 10;
+            const totalGridHeight = measurements.cellHeight * 10;
+            
+            // Constrain touch position to grid boundaries
+            const clampedX = Math.max(0, Math.min(totalGridWidth, touchX));
+            const clampedY = Math.max(0, Math.min(totalGridHeight, touchY));
+            
+            // Calculate new dimensions based on constrained touch position
+            let newColumns = Math.max(1, Math.min(10, Math.round(clampedX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.round(clampedY / measurements.cellHeight)));
             
             let changed = false;
             

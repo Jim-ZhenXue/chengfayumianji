@@ -265,21 +265,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function updateCircleMarkerPosition() {
         const measurements = updateGridMeasurements();
+        const markerRadius = 10; // 圆点半径
         
         // 确保columns和rows在有效范围内
         columns = Math.max(1, Math.min(10, columns));
         rows = Math.max(1, Math.min(10, rows));
         
-        // 计算圆点位置，确保在黄色区域的右下角方格内
-        const offsetX = (columns - 1) * measurements.cellWidth + measurements.cellWidth * 0.5;
-        const offsetY = (rows - 1) * measurements.cellHeight + measurements.cellHeight * 0.5;
+        // 计算圆点应该位于的单元格
+        const targetCellX = columns - 1; // 0-indexed
+        const targetCellY = rows - 1; // 0-indexed
+        
+        // 计算当前单元格的边界（左上角和右下角坐标）
+        const cellLeft = targetCellX * measurements.cellWidth;
+        const cellTop = targetCellY * measurements.cellHeight;
+        const cellRight = cellLeft + measurements.cellWidth;
+        const cellBottom = cellTop + measurements.cellHeight;
+        
+        // 计算圆点位置，确保完全在目标单元格内
+        // 将圆点放在单元格的右下角，但确保不超出格子
+        const offsetX = Math.min(cellRight - markerRadius * 1.5, Math.max(cellLeft + markerRadius, cellRight - markerRadius * 1.5));
+        const offsetY = Math.min(cellBottom - markerRadius * 1.5, Math.max(cellTop + markerRadius, cellBottom - markerRadius * 1.5));
         
         // 设置圆点的位置
         circleMarker.style.position = 'absolute';
         circleMarker.style.left = `${offsetX}px`;
         circleMarker.style.top = `${offsetY}px`;
         
-        // 更新连接线
+        // 更新连接线 - 连接到单元格右下角
         updateMarkerConnector(offsetX, offsetY);
     }
     
@@ -307,13 +319,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalGridWidth = measurements.cellWidth * 10;
             const totalGridHeight = measurements.cellHeight * 10;
             
-            // Constrain mouse position to grid boundaries
-            const clampedX = Math.max(0, Math.min(totalGridWidth, mouseX));
-            const clampedY = Math.max(0, Math.min(totalGridHeight, mouseY));
+            // Safety margin to ensure marker stays inside
+            const safetyMargin = 5;
+            
+            // Hard clamp to ensure we're inside the grid boundaries
+            const clampedX = Math.max(safetyMargin, Math.min(totalGridWidth - safetyMargin, mouseX));
+            const clampedY = Math.max(safetyMargin, Math.min(totalGridHeight - safetyMargin, mouseY));
             
             // Calculate new dimensions based on constrained mouse position
-            let newColumns = Math.max(1, Math.min(10, Math.round(clampedX / measurements.cellWidth)));
-            let newRows = Math.max(1, Math.min(10, Math.round(clampedY / measurements.cellHeight)));
+            let newColumns = Math.max(1, Math.min(10, Math.ceil(clampedX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.ceil(clampedY / measurements.cellHeight)));
             
             let changed = false;
             
@@ -329,6 +344,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (changed) {
                 updateFactors();
+                // Force immediate update of marker position to ensure it's within bounds
+                updateCircleMarkerPosition();
             }
         }
         
@@ -371,13 +388,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalGridWidth = measurements.cellWidth * 10;
             const totalGridHeight = measurements.cellHeight * 10;
             
-            // Constrain touch position to grid boundaries
-            const clampedX = Math.max(0, Math.min(totalGridWidth, touchX));
-            const clampedY = Math.max(0, Math.min(totalGridHeight, touchY));
+            // Safety margin to ensure marker stays inside
+            const safetyMargin = 5;
+            
+            // Hard clamp to ensure we're inside the grid boundaries
+            const clampedX = Math.max(safetyMargin, Math.min(totalGridWidth - safetyMargin, touchX));
+            const clampedY = Math.max(safetyMargin, Math.min(totalGridHeight - safetyMargin, touchY));
             
             // Calculate new dimensions based on constrained touch position
-            let newColumns = Math.max(1, Math.min(10, Math.round(clampedX / measurements.cellWidth)));
-            let newRows = Math.max(1, Math.min(10, Math.round(clampedY / measurements.cellHeight)));
+            let newColumns = Math.max(1, Math.min(10, Math.ceil(clampedX / measurements.cellWidth)));
+            let newRows = Math.max(1, Math.min(10, Math.ceil(clampedY / measurements.cellHeight)));
             
             let changed = false;
             
@@ -393,6 +413,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (changed) {
                 updateFactors();
+                // Force immediate update of marker position to ensure it's within bounds
+                updateCircleMarkerPosition();
             }
         }
         

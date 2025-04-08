@@ -461,6 +461,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 更新位置（已移除圆点和连接线的更新）
         // updateCircleMarkerPosition();
         updateConnectingLines();
+        
+        // 窗口大小变化时重新定位红色圆点
+        positionRedDot();
     });
     
     // Add eraser functionality to reset to initial state
@@ -495,10 +498,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const cellWidth = measurements.cellWidth;
         const cellHeight = measurements.cellHeight;
         
+        // 获取红色圆点的实际尺寸
+        const dotStyle = window.getComputedStyle(redDot);
+        const dotWidth = parseFloat(dotStyle.width) || 15;
+        const dotHeight = parseFloat(dotStyle.height) || 15;
+        
         // 将红色圆点定位在左上角方格的右下角（第一个方格）
-        // 减去红色圆点的一半宽高，确保它位于方格内部
-        redDot.style.left = `${cellWidth - 12}px`;
-        redDot.style.top = `${cellHeight - 12}px`;
+        // 设置偏移量以确保它始终位于方格内部
+        const dotOffset = dotWidth * 0.75; // 偏移量的计算采用圆点直径的75%
+        
+        // 精确定位到左上角方格的右下角
+        redDot.style.left = `${cellWidth - dotOffset}px`;
+        redDot.style.top = `${cellHeight - dotOffset}px`;
+        
+        // 确保圆点始终保持可见
+        redDot.style.display = 'block';
     }
     
     // 初始化网格

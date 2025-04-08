@@ -403,6 +403,20 @@ body {
         top: 50px;
     }
     
+    /* iPad红色圆点适配 */
+    .red-dot-container {
+        width: calc(100% - 60px);
+        height: 350px;
+        max-width: 350px;
+        left: 50px;
+        top: 50px;
+    }
+    
+    .red-dot {
+        width: 12px;
+        height: 12px;
+    }
+    
     .factor {
         width: 60px; /* Slightly smaller control elements */
         height: 80px;
@@ -426,6 +440,13 @@ body {
     }
     
     .grid-resizers {
+        width: calc(100% - 100px);
+        height: 380px;
+        max-width: 380px;
+    }
+    
+    /* 平板红色圆点适配 */
+    .red-dot-container {
         width: calc(100% - 100px);
         height: 380px;
         max-width: 380px;
@@ -472,6 +493,20 @@ body {
         height: 300px;
         left: 40px;
         top: 40px;
+    }
+    
+    /* 小屏幕设备红色圆点适配 */
+    .red-dot-container {
+        width: calc(100% - 80px);
+        height: 300px;
+        left: 40px;
+        top: 40px;
+    }
+    
+    .red-dot {
+        width: 10px;
+        height: 10px;
+        border-width: 1px;
     }
     
     .dimension-display {

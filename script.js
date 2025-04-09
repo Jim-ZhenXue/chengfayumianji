@@ -610,6 +610,8 @@ document.addEventListener('DOMContentLoaded', function() {
         rows = 1;
         columns = 1;
         updateFactors();
+        // Reset red dot position
+        positionRedDot();
     });
     
     // Add grid toggle functionality

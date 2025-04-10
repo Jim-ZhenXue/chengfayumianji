@@ -4,58 +4,115 @@ document.addEventListener('DOMContentLoaded', function() {
     let dragOscillator = null;
     let dragGainNode = null;
     let audioInitialized = false;
+    let audioUnlocked = false;
 
-    // 初始化或恢复音频上下文
+    // 初始化音频上下文
+    function initAudioContext() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioInitialized = true;
+            return true;
+        } catch(e) {
+            console.error('Web Audio API not supported:', e);
+            return false;
+        }
+    }
+
+    // 在Safari/iOS上解锁Web Audio
+    function unlockAudio() {
+        if (audioUnlocked || !audioContext) return;
+        
+        // 创建一个短暂的静音音源并播放
+        const silentBuffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = silentBuffer;
+        source.connect(audioContext.destination);
+        
+        // 播放音源（在某些浏览器中可能会失败，所以用try/catch包装）
+        try {
+            source.start(0);
+            audioUnlocked = true;
+            console.log("Audio unlocked successfully");
+        } catch(e) {
+            console.error("Failed to unlock audio:", e);
+        }
+    }
+
+    // 确保音频上下文已初始化并处于活动状态
     function ensureAudioContext() {
         if (!audioContext) {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                audioInitialized = true;
-            } catch(e) {
-                console.error('Web Audio API not supported:', e);
-                return false;
-            }
+            if (!initAudioContext()) return false;
         }
         
         if (audioContext.state === 'suspended') {
-            audioContext.resume();
+            audioContext.resume().then(() => {
+                console.log("AudioContext resumed successfully");
+                audioUnlocked = true;
+            }).catch(e => {
+                console.error("Error resuming AudioContext:", e);
+            });
         }
-        return audioContext;
+        
+        return true;
     }
 
-    // 确保在页面加载时就初始化音频（对iPad尤其重要）
-    ensureAudioContext();
+    // 尝试初始化音频系统
+    initAudioContext();
 
-    // 在页面加载时添加一次性点击事件来初始化音频
-    const initAudioHandler = () => {
+    // 添加多种用户交互事件来解锁音频
+    const unlockEvents = ['touchstart', 'touchend', 'mousedown', 'mouseup', 'click'];
+    
+    function unlockAudioHandler() {
+        if (audioUnlocked) {
+            // 如果已解锁，移除所有事件监听器
+            unlockEvents.forEach(eventType => {
+                document.removeEventListener(eventType, unlockAudioHandler);
+            });
+            return;
+        }
+        
         ensureAudioContext();
-        document.removeEventListener('click', initAudioHandler);
-        document.removeEventListener('touchstart', initAudioHandler);
-    };
-    document.addEventListener('click', initAudioHandler);
-    document.addEventListener('touchstart', initAudioHandler);
+        unlockAudio();
+    }
+    
+    // 在多种事件上添加处理程序
+    unlockEvents.forEach(eventType => {
+        document.addEventListener(eventType, unlockAudioHandler, false);
+    });
 
     // Sound effect functions
     function createOscillator(frequency, duration, type = 'sine', volume = 0.1) {
-        ensureAudioContext(); // 确保音频上下文已初始化
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        if (!ensureAudioContext()) return null;
+        
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-        oscillator.type = type;
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-        return { oscillator, gainNode };
+            return { oscillator, gainNode };
+        } catch(e) {
+            console.error("Error creating oscillator:", e);
+            return null;
+        }
     }
 
     function playClickSound() {
-        const { oscillator } = createOscillator(800, 0.1, 'sine', 0.05);
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.1);
+        const nodes = createOscillator(800, 0.1, 'sine', 0.05);
+        if (!nodes) return;
+        
+        try {
+            nodes.oscillator.start();
+            nodes.oscillator.stop(audioContext.currentTime + 0.1);
+        } catch(e) {
+            console.error("Error playing click sound:", e);
+        }
     }
 
     function playEraseSound() {
@@ -630,13 +687,15 @@ document.addEventListener('DOMContentLoaded', function() {
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
         
-        // 确保音频上下文已初始化
-        if (ensureAudioContext()) {
-            try {
-                startDragSound(); // 开始拖动时播放音效
-            } catch(e) {
-                console.error('Failed to play drag sound:', e);
-            }
+        // 首先确保音频已解锁
+        ensureAudioContext();
+        unlockAudio();
+        
+        // 尝试播放拖动声音
+        try {
+            startDragSound();
+        } catch(e) {
+            console.error('Failed to play drag sound:', e);
         }
         
         e.preventDefault();

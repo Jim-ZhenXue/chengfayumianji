@@ -1,4 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Audio elements
+    const clickSound = document.getElementById('clickSound');
+    const eraseSound = document.getElementById('eraseSound');
+    const toggleSound = document.getElementById('toggleSound');
+    const moveSound = document.getElementById('moveSound');
+
+    // Sound effect functions
+    function playClickSound() {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => console.log('Error playing click sound:', e));
+    }
+
+    function playEraseSound() {
+        eraseSound.currentTime = 0;
+        eraseSound.play().catch(e => console.log('Error playing erase sound:', e));
+    }
+
+    function playToggleSound() {
+        toggleSound.currentTime = 0;
+        toggleSound.play().catch(e => console.log('Error playing toggle sound:', e));
+    }
+
+    function playMoveSound() {
+        moveSound.currentTime = 0;
+        moveSound.play().catch(e => console.log('Error playing move sound:', e));
+    }
     // Grid initialization
     const grid = document.querySelector('.grid');
     const gridContainer = document.querySelector('.grid-container');
@@ -93,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event Listeners for factor controls
     document.querySelector('.factor-left .up-arrow').addEventListener('click', function() {
         if (rows < 10) {
+            playClickSound();
             rows++;
             updateFactors();
         }
@@ -100,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelector('.factor-left .down-arrow').addEventListener('click', function() {
         if (rows > 1) {
+            playClickSound();
             rows--;
             updateFactors();
         }
@@ -107,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelector('.factor-right .up-arrow').addEventListener('click', function() {
         if (columns < 10) {
+            playClickSound();
             columns++;
             updateFactors();
         }
@@ -114,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelector('.factor-right .down-arrow').addEventListener('click', function() {
         if (columns > 1) {
+            playClickSound();
             columns--;
             updateFactors();
         }
@@ -607,6 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add eraser functionality to reset to initial state
     eraserTool.addEventListener('click', function() {
         // Reset to initial state (1x1)
+        playEraseSound();
         rows = 1;
         columns = 1;
         updateFactors();
@@ -616,6 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add grid toggle functionality
     gridIcon.addEventListener('click', function() {
+        playToggleSound();
         gridVisible = !gridVisible;
         
         // Toggle grid cell borders

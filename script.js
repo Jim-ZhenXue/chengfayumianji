@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Sound effect functions
-    function createOscillator(frequency, duration, type = 'sine', volume = 10) {
+    function createOscillator(frequency, duration, type = 'sine', volume = 100) {
         if (!ensureAudioContext()) return null;
         
         try {

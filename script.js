@@ -3,86 +3,39 @@ document.addEventListener('DOMContentLoaded', function() {
     let audioContext = null;
     let dragOscillator = null;
     let dragGainNode = null;
-    let audioInitialized = false;
-    let audioUnlocked = false;
 
     // 初始化音频上下文
-    function initAudioContext() {
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            audioInitialized = true;
-            return true;
-        } catch(e) {
-            console.error('Web Audio API not supported:', e);
-            return false;
-        }
-    }
-
-    // 在Safari/iOS上解锁Web Audio
-    function unlockAudio() {
-        if (audioUnlocked || !audioContext) return;
-        
-        // 创建一个短暂的静音音源并播放
-        const silentBuffer = audioContext.createBuffer(1, 1, 22050);
-        const source = audioContext.createBufferSource();
-        source.buffer = silentBuffer;
-        source.connect(audioContext.destination);
-        
-        // 播放音源（在某些浏览器中可能会失败，所以用try/catch包装）
-        try {
-            source.start(0);
-            audioUnlocked = true;
-            console.log("Audio unlocked successfully");
-        } catch(e) {
-            console.error("Failed to unlock audio:", e);
-        }
-    }
-
-    // 确保音频上下文已初始化并处于活动状态
-    function ensureAudioContext() {
+    function initAudio() {
         if (!audioContext) {
-            if (!initAudioContext()) return false;
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // 创建一个短暂的静音并播放，解锁音频
+                const buffer = audioContext.createBuffer(1, 1, 22050);
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            } catch(e) {
+                console.error('Audio initialization failed:', e);
+                return false;
+            }
         }
-        
+
         if (audioContext.state === 'suspended') {
-            audioContext.resume().then(() => {
-                console.log("AudioContext resumed successfully");
-                audioUnlocked = true;
-            }).catch(e => {
-                console.error("Error resuming AudioContext:", e);
-            });
+            audioContext.resume();
         }
-        
+
         return true;
     }
 
-    // 尝试初始化音频系统
-    initAudioContext();
-
-    // 添加多种用户交互事件来解锁音频
-    const unlockEvents = ['touchstart', 'touchend', 'mousedown', 'mouseup', 'click'];
-    
-    function unlockAudioHandler() {
-        if (audioUnlocked) {
-            // 如果已解锁，移除所有事件监听器
-            unlockEvents.forEach(eventType => {
-                document.removeEventListener(eventType, unlockAudioHandler);
-            });
-            return;
-        }
-        
-        ensureAudioContext();
-        unlockAudio();
-    }
-    
-    // 在多种事件上添加处理程序
-    unlockEvents.forEach(eventType => {
-        document.addEventListener(eventType, unlockAudioHandler, false);
-    });
+    // 初始化音频
+    document.addEventListener('click', initAudio, { once: true });
+    document.addEventListener('touchstart', initAudio, { once: true });
+    document.addEventListener('mousedown', initAudio, { once: true });
 
     // Sound effect functions
     function createOscillator(frequency, duration, type = 'sine', volume = 0.1) {
-        if (!ensureAudioContext()) return null;
+        if (!audioContext) return null;
         
         try {
             const oscillator = audioContext.createOscillator();
@@ -136,25 +89,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startDragSound() {
-        if (dragOscillator) return; // 如果已经在播放，就不要重新开始
+        if (dragOscillator) {
+            stopDragSound();
+        }
         const nodes = createOscillator(300, 0.5, 'sine', 0.02);
+        if (!nodes) return;
+        
         dragOscillator = nodes.oscillator;
         dragGainNode = nodes.gainNode;
-        dragOscillator.start();
+        
+        try {
+            dragOscillator.start();
+        } catch(e) {
+            console.error('Failed to start drag sound:', e);
+            dragOscillator = null;
+            dragGainNode = null;
+        }
     }
 
     function updateDragSound(progress) {
-        if (!dragOscillator) return;
-        // 根据拖动进度改变音调，从300Hz到600Hz
-        const frequency = 300 + (progress * 300);
-        dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        if (!dragOscillator || !dragGainNode) return;
+        
+        try {
+            // 根据拖动进度改变音调，从300Hz到600Hz
+            const frequency = 300 + (progress * 300);
+            dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            
+            // 根据进度调整音量
+            const volume = 0.02 + (progress * 0.03); // 音量从0.02到0.05
+            dragGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        } catch(e) {
+            console.error('Failed to update drag sound:', e);
+        }
     }
 
     function stopDragSound() {
         if (!dragOscillator) return;
-        dragOscillator.stop(audioContext.currentTime + 0.1);
-        dragOscillator = null;
-        dragGainNode = null;
+        
+        try {
+            // 添加淡出效果
+            if (dragGainNode) {
+                dragGainNode.gain.cancelScheduledValues(audioContext.currentTime);
+                dragGainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
+            }
+            dragOscillator.stop(audioContext.currentTime + 0.15);
+        } catch(e) {
+            console.error('Failed to stop drag sound:', e);
+        } finally {
+            dragOscillator = null;
+            dragGainNode = null;
+        }
     }
     // Grid initialization
     const grid = document.querySelector('.grid');
@@ -622,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加红色圆点的拖动功能
     redDot.addEventListener('mousedown', function(e) {
         isRedDotDragging = true;
+        startDragSound();
         e.preventDefault();
     });
     
@@ -675,29 +660,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 鼠标松开结束拖动
     document.addEventListener('mouseup', function() {
-        isRedDotDragging = false;
+        if (isRedDotDragging) {
+            isRedDotDragging = false;
+            stopDragSound();
+        }
     });
     
     // 鼠标离开窗口时结束拖动
     document.addEventListener('mouseleave', function() {
-        isRedDotDragging = false;
+        if (isRedDotDragging) {
+            isRedDotDragging = false;
+            stopDragSound();
+        }
     });
     
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
-        
-        // 首先确保音频已解锁
-        ensureAudioContext();
-        unlockAudio();
-        
-        // 尝试播放拖动声音
-        try {
-            startDragSound();
-        } catch(e) {
-            console.error('Failed to play drag sound:', e);
-        }
-        
+        startDragSound();
         e.preventDefault();
         
         // 防止拖动时页面滚动

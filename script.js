@@ -1,25 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Web Audio API context
-    let audioContext = null;
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     let dragOscillator = null;
     let dragGainNode = null;
 
-    // 初始化音频上下文
-    function initAudioContext() {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        }
-        return audioContext;
-    }
-
     // Sound effect functions
     function createOscillator(frequency, duration, type = 'sine', volume = 0.1) {
-        if (!audioContext) {
-            initAudioContext();
-        }
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
@@ -61,14 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startDragSound() {
-        if (dragOscillator) {
-            stopDragSound(); // 如果已经在播放，先停止当前的音效
-        }
-        const nodes = createOscillator(300, 0.5, 'sine', 0.02); // 初始音量设为0.02
+        if (dragOscillator) return; // 如果已经在播放，就不要重新开始
+        const nodes = createOscillator(300, 0.5, 'sine', 0.02);
         dragOscillator = nodes.oscillator;
         dragGainNode = nodes.gainNode;
-        dragGainNode.gain.cancelScheduledValues(audioContext.currentTime);
-        dragGainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
         dragOscillator.start();
     }
 
@@ -77,20 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 根据拖动进度改变音调，从300Hz到600Hz
         const frequency = 300 + (progress * 300);
         dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        // 根据进度调整音量
-        if (dragGainNode) {
-            dragGainNode.gain.cancelScheduledValues(audioContext.currentTime);
-            const volume = 0.02 + (progress * 0.03); // 音量从0.02到0.05
-            dragGainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.1);
-        }
     }
 
     function stopDragSound() {
-        if (!dragOscillator || !dragGainNode) return;
-        // 添加淡出效果
-        dragGainNode.gain.cancelScheduledValues(audioContext.currentTime);
-        dragGainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
-        dragOscillator.stop(audioContext.currentTime + 0.15);
+        if (!dragOscillator) return;
+        dragOscillator.stop(audioContext.currentTime + 0.1);
         dragOscillator = null;
         dragGainNode = null;
     }
@@ -624,7 +597,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
-        initAudioContext(); // 确保音频上下文已初始化
         startDragSound(); // 开始拖动时播放音效
         e.preventDefault();
         
@@ -648,9 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalGridHeight = measurements.cellHeight * 10;
         
         // 计算拖动进度用于音效
-        const progressX = touchX / totalGridWidth;
-        const progressY = touchY / totalGridHeight;
-        const progress = Math.min(1, Math.max(0, (progressX + progressY) / 2));
+        const progress = Math.min(1, Math.max(0, (touchX + touchY) / (totalGridWidth + totalGridHeight)));
         updateDragSound(progress);
         
         // 安全边距
@@ -763,6 +733,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 精确定位到当前黄色区域的右下角
         redDot.style.left = `${areaRightX - dotOffset}px`;
+        redDot.style.top = `${areaBottomY - dotOffset}px`;
+        
+        // 确保圆点始终保持可见
+        redDot.style.display = 'block';
+    }
+    
+    // 初始化网格
+    // updateCircleMarkerPosition(); // 已移除蓝色圆点的初始化
+    
+    // Initialize the grid on load
+    initializeGrid();
+    
+    // 定位红色圆点到左上角方格右下角
+    positionRedDot();
+});     redDot.style.left = `${areaRightX - dotOffset}px`;
         redDot.style.top = `${areaBottomY - dotOffset}px`;
         
         // 确保圆点始终保持可见

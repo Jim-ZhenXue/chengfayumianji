@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Sound effect functions
-    function createOscillator(frequency, duration, type = 'sine', volume = 100) {
+    function createOscillator(frequency, duration, type = 'sine', volume = 3.0) {
         if (!ensureAudioContext()) return null;
         
         try {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function playClickSound() {
-        const nodes = createOscillator(800, 0.1, 'sine', 0.05);
+        const nodes = createOscillator(800, 0.1, 'sine', 0.3);
         if (!nodes) return;
         
         try {
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function playEraseSound() {
-        const { oscillator } = createOscillator(400, 0.15, 'sine', 0.05);
+        const { oscillator } = createOscillator(400, 0.15, 'sine', 0.3);
         oscillator.frequency.linearRampToValueAtTime(200, audioContext.currentTime + 0.15);
         oscillator.start();
         oscillator.stop(audioContext.currentTime + 0.15);

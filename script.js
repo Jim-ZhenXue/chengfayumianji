@@ -123,13 +123,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function playToggleSound() {
-        const { oscillator } = createOscillator(600, 0.1, 'sine', 0.05);
+        const { oscillator } = createOscillator(600, 0.1, 'sine', 0.3);
         oscillator.start();
         oscillator.stop(audioContext.currentTime + 0.1);
     }
 
     function playMoveSound() {
-        const { oscillator } = createOscillator(500, 0.1, 'sine', 0.05);
+        const { oscillator } = createOscillator(500, 0.1, 'sine', 0.3);
         oscillator.frequency.linearRampToValueAtTime(700, audioContext.currentTime + 0.1);
         oscillator.start();
         oscillator.stop(audioContext.currentTime + 0.1);

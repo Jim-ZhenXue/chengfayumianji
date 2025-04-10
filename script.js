@@ -595,24 +595,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 添加触摸事件支持移动设备
-    // 声明触摸偏移变量
-    let touchOffsetX = 0;
-    let touchOffsetY = 0;
-
-    // 改为监听容器的触摸事件以扩大触摸区域
-    document.querySelector('.red-dot-container').addEventListener('touchstart', function(e) {
+    redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
         startDragSound(); // 开始拖动时播放音效
-
-        // 记录初始触摸位置相对于红点容器的偏移
-        const touch = e.touches[0];
-        const rect = this.getBoundingClientRect();
-        touchOffsetX = touch.clientX - rect.left;
-        touchOffsetY = touch.clientY - rect.top;
+        e.preventDefault();
         
         // 防止拖动时页面滚动
         document.body.style.overflow = 'hidden';
-        e.preventDefault();
     });
     
     // 处理触摸移动事件
@@ -724,7 +713,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 定位红色圆点到当前黄色区域的右下角的函数
     function positionRedDot() {
         const redDot = document.querySelector('.red-dot');
-        const redDotContainer = document.querySelector('.red-dot-container');
         const measurements = updateGridMeasurements();
         
         // 计算单元格的宽高
@@ -743,16 +731,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 设置偏移量以确保圆点始终位于方格内部
         const dotOffset = dotWidth * 0.75; // 偏移量的计算采用圆点直径的75%
         
-        // 扩大容器的点击区域，但保持视觉圆点大小不变
-        redDotContainer.style.width = `${dotWidth * 2}px`;
-        redDotContainer.style.height = `${dotHeight * 2}px`;
-        redDotContainer.style.left = `${areaRightX - dotWidth}px`;
-        redDotContainer.style.top = `${areaBottomY - dotHeight}px`;
-        
         // 精确定位到当前黄色区域的右下角
-        redDot.style.left = '50%';
-        redDot.style.top = '50%';
-        redDot.style.transform = 'translate(-50%, -50%)';
+        redDot.style.left = `${areaRightX - dotOffset}px`;
+        redDot.style.top = `${areaBottomY - dotOffset}px`;
         
         // 确保圆点始终保持可见
         redDot.style.display = 'block';

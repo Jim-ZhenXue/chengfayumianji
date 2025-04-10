@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function startDragSound() {
         if (dragOscillator) return; // 如果已经在播放，就不要重新开始
-        const nodes = createOscillator(300, 0.5, 'sine', 0.02);
+        const nodes = createOscillator(300, 0.5, 'sine', 0.3);
         dragOscillator = nodes.oscillator;
         dragGainNode = nodes.gainNode;
         dragOscillator.start();

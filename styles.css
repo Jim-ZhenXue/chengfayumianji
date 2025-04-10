@@ -570,8 +570,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 15px;
-    height: 15px;
+    width: 30px; /* 增加触摸区域到原来的两倍 */
+    height: 30px; /* 增加触摸区域到原来的两倍 */
     background-color: #ff3333;
     border-radius: 50%;
     border: 2px solid #fff;
@@ -580,15 +580,35 @@ body {
     cursor: grab;
     pointer-events: auto;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    /* 使用伪元素来显示较小的视觉点 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent; /* 移除背景色 */
 }
 
-.red-dot:hover {
+.red-dot::after {
+    content: '';
+    position: absolute;
+    width: 15px; /* 保持原来的视觉大小 */
+    height: 15px; /* 保持原来的视觉大小 */
+    background-color: #ff3333;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.red-dot:hover::after {
     background-color: #ff5555;
     transform: scale(1.1);
 }
 
 .red-dot:active {
     cursor: grabbing;
+}
+
+.red-dot:active::after {
     background-color: #ff0000;
 }
 

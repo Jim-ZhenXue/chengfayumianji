@@ -137,17 +137,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function startDragSound() {
         if (dragOscillator) return; // 如果已经在播放，就不要重新开始
-        const nodes = createOscillator(300, 0.5, 'sine', 0.02);
+        const nodes = createOscillator(800, 0.1, 'sine', 0.05); // 使用和点击相同的参数
+        if (!nodes) return;
         dragOscillator = nodes.oscillator;
         dragGainNode = nodes.gainNode;
         dragOscillator.start();
     }
 
     function updateDragSound(progress) {
-        if (!dragOscillator) return;
-        // 根据拖动进度改变音调，从300Hz到600Hz
-        const frequency = 300 + (progress * 300);
-        dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        // 不再需要根据进度更新音调
+        return;
     }
 
     function stopDragSound() {
@@ -622,6 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加红色圆点的拖动功能
     redDot.addEventListener('mousedown', function(e) {
         isRedDotDragging = true;
+        playClickSound(); // 使用点击音效
         e.preventDefault();
     });
     
@@ -686,18 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
-        
-        // 首先确保音频已解锁
-        ensureAudioContext();
-        unlockAudio();
-        
-        // 尝试播放拖动声音
-        try {
-            startDragSound();
-        } catch(e) {
-            console.error('Failed to play drag sound:', e);
-        }
-        
+        playClickSound(); // 使用点击音效
         e.preventDefault();
         
         // 防止拖动时页面滚动

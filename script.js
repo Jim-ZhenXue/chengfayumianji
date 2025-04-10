@@ -1,29 +1,71 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Audio elements
-    const clickSound = document.getElementById('clickSound');
-    const eraseSound = document.getElementById('eraseSound');
-    const toggleSound = document.getElementById('toggleSound');
-    const moveSound = document.getElementById('moveSound');
+    // Web Audio API context
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let dragOscillator = null;
+    let dragGainNode = null;
 
     // Sound effect functions
+    function createOscillator(frequency, duration, type = 'sine', volume = 0.1) {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        return { oscillator, gainNode };
+    }
+
     function playClickSound() {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(e => console.log('Error playing click sound:', e));
+        const { oscillator } = createOscillator(800, 0.1, 'sine', 0.05);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
     }
 
     function playEraseSound() {
-        eraseSound.currentTime = 0;
-        eraseSound.play().catch(e => console.log('Error playing erase sound:', e));
+        const { oscillator } = createOscillator(400, 0.15, 'sine', 0.05);
+        oscillator.frequency.linearRampToValueAtTime(200, audioContext.currentTime + 0.15);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.15);
     }
 
     function playToggleSound() {
-        toggleSound.currentTime = 0;
-        toggleSound.play().catch(e => console.log('Error playing toggle sound:', e));
+        const { oscillator } = createOscillator(600, 0.1, 'sine', 0.05);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
     }
 
     function playMoveSound() {
-        moveSound.currentTime = 0;
-        moveSound.play().catch(e => console.log('Error playing move sound:', e));
+        const { oscillator } = createOscillator(500, 0.1, 'sine', 0.05);
+        oscillator.frequency.linearRampToValueAtTime(700, audioContext.currentTime + 0.1);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
+    }
+
+    function startDragSound() {
+        if (dragOscillator) return; // 如果已经在播放，就不要重新开始
+        const nodes = createOscillator(300, 0.5, 'sine', 0.02);
+        dragOscillator = nodes.oscillator;
+        dragGainNode = nodes.gainNode;
+        dragOscillator.start();
+    }
+
+    function updateDragSound(progress) {
+        if (!dragOscillator) return;
+        // 根据拖动进度改变音调，从300Hz到600Hz
+        const frequency = 300 + (progress * 300);
+        dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    }
+
+    function stopDragSound() {
+        if (!dragOscillator) return;
+        dragOscillator.stop(audioContext.currentTime + 0.1);
+        dragOscillator = null;
+        dragGainNode = null;
     }
     // Grid initialization
     const grid = document.querySelector('.grid');
@@ -555,6 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
+        startDragSound(); // 开始拖动时播放音效
         e.preventDefault();
         
         // 防止拖动时页面滚动
@@ -572,9 +615,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const touchX = touch.clientX - measurements.gridLeft;
         const touchY = touch.clientY - measurements.gridTop;
         
-        // 确保在网格边界内
+        // 计算网格总宽高
         const totalGridWidth = measurements.cellWidth * 10;
         const totalGridHeight = measurements.cellHeight * 10;
+        
+        // 计算拖动进度用于音效
+        const progress = Math.min(1, Math.max(0, (touchX + touchY) / (totalGridWidth + totalGridHeight)));
+        updateDragSound(progress);
         
         // 安全边距
         const safetyMargin = 5;
@@ -612,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 触摸结束处理
     document.addEventListener('touchend', function() {
         isRedDotDragging = false;
+        stopDragSound(); // 停止拖动音效
         
         // 恢复滚动
         document.body.style.overflow = '';
@@ -619,6 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.addEventListener('touchcancel', function() {
         isRedDotDragging = false;
+        stopDragSound(); // 停止拖动音效
         
         // 恢复滚动
         document.body.style.overflow = '';

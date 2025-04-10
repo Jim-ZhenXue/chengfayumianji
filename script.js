@@ -1,11 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Web Audio API context
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let audioContext = null;
     let dragOscillator = null;
     let dragGainNode = null;
 
+    // 初始化或恢复音频上下文
+    function ensureAudioContext() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        return audioContext;
+    }
+
+    // 在页面加载时添加一次性点击事件来初始化音频
+    const initAudioHandler = () => {
+        ensureAudioContext();
+        document.removeEventListener('click', initAudioHandler);
+        document.removeEventListener('touchstart', initAudioHandler);
+    };
+    document.addEventListener('click', initAudioHandler);
+    document.addEventListener('touchstart', initAudioHandler);
+
     // Sound effect functions
     function createOscillator(frequency, duration, type = 'sine', volume = 0.1) {
+        ensureAudioContext(); // 确保音频上下文已初始化
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
@@ -597,6 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
+        ensureAudioContext(); // 确保音频上下文已初始化
         startDragSound(); // 开始拖动时播放音效
         e.preventDefault();
         
@@ -747,19 +769,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 定位红色圆点到左上角方格右下角
     positionRedDot();
-});     redDot.style.left = `${areaRightX - dotOffset}px`;
-        redDot.style.top = `${areaBottomY - dotOffset}px`;
-        
-        // 确保圆点始终保持可见
-        redDot.style.display = 'block';
-    }
-    
-    // 初始化网格
-    // updateCircleMarkerPosition(); // 已移除蓝色圆点的初始化
-    
-    // Initialize the grid on load
-    initializeGrid();
-    
-    // 定位红色圆点到左上角方格右下角
-    positionRedDot();
-}); 
+});

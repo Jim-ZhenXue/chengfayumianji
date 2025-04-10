@@ -144,10 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateDragSound(progress) {
-        if (!dragOscillator) return;
+        if (!dragOscillator || !dragGainNode) return;
         // 根据拖动进度改变音调，从300Hz到600Hz
         const frequency = 300 + (progress * 300);
         dragOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        // 设置较大的音量
+        dragGainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
     }
 
     function stopDragSound() {

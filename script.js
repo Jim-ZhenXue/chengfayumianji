@@ -3,17 +3,28 @@ document.addEventListener('DOMContentLoaded', function() {
     let audioContext = null;
     let dragOscillator = null;
     let dragGainNode = null;
+    let audioInitialized = false;
 
     // 初始化或恢复音频上下文
     function ensureAudioContext() {
         if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioInitialized = true;
+            } catch(e) {
+                console.error('Web Audio API not supported:', e);
+                return false;
+            }
         }
+        
         if (audioContext.state === 'suspended') {
             audioContext.resume();
         }
         return audioContext;
     }
+
+    // 确保在页面加载时就初始化音频（对iPad尤其重要）
+    ensureAudioContext();
 
     // 在页面加载时添加一次性点击事件来初始化音频
     const initAudioHandler = () => {
@@ -618,8 +629,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加触摸事件支持移动设备
     redDot.addEventListener('touchstart', function(e) {
         isRedDotDragging = true;
-        ensureAudioContext(); // 确保音频上下文已初始化
-        startDragSound(); // 开始拖动时播放音效
+        
+        // 确保音频上下文已初始化
+        if (ensureAudioContext()) {
+            try {
+                startDragSound(); // 开始拖动时播放音效
+            } catch(e) {
+                console.error('Failed to play drag sound:', e);
+            }
+        }
+        
         e.preventDefault();
         
         // 防止拖动时页面滚动

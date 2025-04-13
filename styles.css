@@ -271,58 +271,32 @@ body {
 
 .up-arrow, .down-arrow {
     position: absolute;
-    width: 30px; /* 增加点击区域宽度 */
-    height: 30px; /* 增加点击区域高度 */
+    width: 0;
+    height: 0;
     cursor: pointer;
-    background-color: transparent; /* 保持背景透明 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .up-arrow {
-    top: 0px; /* 调整位置以覆盖更大区域 */
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.up-arrow::after {
-    content: '';
-    width: 0;
-    height: 0;
+    top: 5px;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 10px solid;
 }
 
 .down-arrow {
-    bottom: 0px; /* 调整位置以覆盖更大区域 */
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.down-arrow::after {
-    content: '';
-    width: 0;
-    height: 0;
+    bottom: 5px;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid;
 }
 
-.up-arrow.blue::after {
+.up-arrow.blue, .down-arrow.blue {
     border-bottom-color: #4499ff;
-}
-
-.down-arrow.blue::after {
     border-top-color: #4499ff;
 }
 
-.up-arrow.red::after {
+.up-arrow.red, .down-arrow.red {
     border-bottom-color: #ff6655;
-}
-
-.down-arrow.red::after {
     border-top-color: #ff6655;
 }
 

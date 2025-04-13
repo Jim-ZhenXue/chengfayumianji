@@ -251,8 +251,8 @@ body {
 }
 
 .factor {
-    width: 70px;
-    height: 90px;
+    width: 80px;
+    height: 120px;
     border: 1px solid #777;
     border-radius: 10px;
     display: flex;
@@ -263,9 +263,9 @@ body {
 }
 
 .factor-value {
-    font-size: 40px;
+    font-size: 48px;
     font-weight: bold;
-    line-height: 90px;
+    line-height: 120px;
     color: #f0f0f0;
 }
 
@@ -277,17 +277,17 @@ body {
 }
 
 .up-arrow {
-    top: 5px;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid;
+    top: 10px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid;
 }
 
 .down-arrow {
-    bottom: 5px;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid;
+    bottom: 10px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid;
 }
 
 .up-arrow.blue, .down-arrow.blue {
